@@ -65,6 +65,7 @@ const LeftMenu = ({navigation}) => {
             icon="forum-outline"
             label="Foro"
             style={styles.leftMenuItem}
+            onPress={() => navigation.navigate('Foro')}
           />
           <Drawer.CollapsedItem
             icon="home-outline"

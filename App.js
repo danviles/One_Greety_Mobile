@@ -12,29 +12,18 @@ import Dashboard from './src/views/Dashboard';
 import Espacio from './src/views/Espacio';
 import PerfilUsuario from './src/views/PerfilUsuario';
 import EditarPerfil from './src/views/EditarPerfil';
+import Foro from './src/views/Foro';
 
 import {AuthProvider} from './src/context/AuthContext';
 import {AlertaProvider} from './src/context/AlertaContext';
 
-import {Provider, DefaultTheme} from 'react-native-paper';
+import {Provider} from 'react-native-paper';
+import {theme} from './src/core/theme';
 import {EspacioProvider} from './src/context/EspacioContext';
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  const theme = {
-    ...DefaultTheme,
-    colors: {
-      ...DefaultTheme.colors,
-      text: '#fff',
-      primary: '#990000',
-      secondary: '#F77E21',
-      gray: '#6b7280',
-      green: '#16A34A',
-      background: '#111827',
-      bgBottomBar: '#1f2937',
-    },
-  };
   return (
     <NavigationContainer>
       <Provider>
@@ -71,6 +60,14 @@ const App = () => {
                   component={Espacio}
                   options={{
                     title: 'Espacio',
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Foro"
+                  component={Foro}
+                  options={{
+                    title: 'Foro',
                     headerShown: false,
                   }}
                 />
