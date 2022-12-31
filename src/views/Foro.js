@@ -46,8 +46,8 @@ const Foro = ({navigation}) => {
       </View>
 
       <View style={styles.posts}>
-        { espacio.esp_foro && espacio.esp_foro.map((post) => (
-          <PostPreview key={post._id} post={post} auth={auth} />
+        { espacio.esp_foro.length > 0 && espacio.esp_foro.map(post => (
+          <PostPreview key={post} auth={auth} post={post} />
         ))}
       </View>
 
