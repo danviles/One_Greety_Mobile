@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
+import React, {useState, useCallback} from 'react';
+import {View, Text, StyleSheet, TouchableWithoutFeedback, ScrollView, RefreshControl} from 'react-native';
 import {Avatar, Button, ActivityIndicator} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import LeftMenu from '../components/LeftMenu';
@@ -8,8 +8,16 @@ import useEspacio from '../hooks/useEspacio';
 import useAuth from '../hooks/useAuth';
 
 const Foro = ({navigation}) => {
-  const {espacio, cargando} = useEspacio();
+  const {espacio, cargando, obtenerEspacio} = useEspacio();
   const {auth, usu_perfil_img} = useAuth();
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    obtenerEspacio(espacio._id);
+    setRefreshing(false);
+  }, []);
 
   if (cargando) {
     return (
@@ -20,10 +28,12 @@ const Foro = ({navigation}) => {
   return (
     <>
       <LeftMenu navigation={navigation} />
+
       <View style={styles.cabeceraPost}>
         <Text style={styles.tituloForo}>Foro</Text>
         <View style={styles.nuevoPostIcon}>
-          <TouchableWithoutFeedback onPress={() => navigation.navigate('Espacio')}>
+          <TouchableWithoutFeedback
+            onPress={() => navigation.navigate('CrearPost')}>
             <MaterialCommunityIcons
               name="pencil-plus-outline"
               color={'white'}
@@ -45,45 +55,17 @@ const Foro = ({navigation}) => {
         </Button>
       </View>
 
-      <View style={styles.posts}>
-        { espacio.esp_foro.length > 0 && espacio.esp_foro.map(post => (
-          <PostPreview key={post} auth={auth} post={post} />
-        ))}
-      </View>
-
-      {/* <View style={styles.espacioContainer}>
-        <ImageBackground
-          source={{
-            uri: espacio.esp_img_portada,
-          }}
-          resizeMode="cover"
-          style={styles.image}>
-          <View style={styles.biografia}>
-            <View style={styles.tituloSeguidores}>
-              <Text style={styles.textTitulo}>{espacio.esp_nombre}</Text>
-              <View style={styles.seguidoresContainer}>
-                <MaterialCommunityIcons
-                  name="heart-outline"
-                  color={'red'}
-                  size={20}
-                />
-                <Text style={styles.seguidores}>
-                  {espacio.esp_seguidores.length}
-                </Text>
-              </View>
-            </View>
-            <Paragraph style={styles.textDescripcion}>
-              {espacio.esp_descripcion}
-            </Paragraph>
-            <Button
-              mode="contained"
-              style={styles.button}
-            >
-              {espacio.esp_acceso ? 'Unirte al club' : 'Pedir acceso'}
-            </Button>
-          </View>
-        </ImageBackground>
-      </View> */}
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
+        <View style={styles.posts}>
+          {espacio.esp_foro.length > 0 &&
+            espacio.esp_foro.map(post => (
+              <PostPreview key={post._id} post={post} />
+            ))}
+        </View>
+      </ScrollView>
     </>
   );
 };
@@ -93,7 +75,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   nuevoPostIcon: {
-    backgroundColor: '#26c963' ,
+    backgroundColor: '#26c963',
     width: 40,
     height: 40,
     borderRadius: 100,

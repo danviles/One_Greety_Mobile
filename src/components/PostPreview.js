@@ -4,19 +4,18 @@ import {Avatar} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
-const PostPreview = ({post, auth}) => {
+const PostPreview = ({post}) => {
 
-  const {usu_perfil_img, usu_nombre} = auth;
-  const {post_titulo} = post;
+  const {post_titulo, post_creador} = post;
 
 
   return (
     <View style={styles.postContenedor}>
       <View style={styles.postCabecera}>
         <View style={styles.postPerfil}>
-          <Avatar.Image size={50} source={{uri: usu_perfil_img}} />
+          <Avatar.Image size={50} source={{uri: post_creador.usu_perfil_img}} />
           <View style={styles.postPerfilTexto}>
-            <Text style={styles.postUsuarioTexto}>{usu_nombre}</Text>
+            <Text style={styles.postUsuarioTexto}>{post_creador.usu_nombre}</Text>
             <Text style={styles.postTiempoTexto}>hace 1 hora</Text>
           </View>
         </View>

@@ -22,7 +22,7 @@ const Espacio = ({navigation}) => {
           source={{
             uri: espacio.esp_img_portada,
           }}
-          resizeMode="cover"
+          resizeMode="stretch"
           style={styles.image}>
           <View style={styles.biografia}>
             <View style={styles.tituloSeguidores}>

@@ -9,6 +9,7 @@ const EspacioProvider = ({children}) => {
   const [cargando, setCargando] = useState(false);
 
   const obtenerEspacios = async () => {
+    setCargando(true);
     try {
       const {data} = await clienteAxios.get('/espacios/todos');
       setEspacios(data);

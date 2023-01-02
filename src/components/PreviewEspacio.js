@@ -8,7 +8,8 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable 
+  Pressable,
+  Image 
 } from 'react-native';
 import {
   Card,
@@ -68,12 +69,14 @@ const PreviewEspacio = ({navigation, espacio}) => {
     <View style={{marginBottom: 10}}>
       <Card>
         <Pressable  onPress={handleEspacio}>
-          <Card.Cover
+          {/* <Card.Cover
             style={styles.cardImage}
             source={{
               uri: esp_img_portada,
             }}
-          />
+          /> */}
+              <Image source={{uri: esp_img_portada}} style={styles.image} />
+
         </Pressable >
         <Card.Content>
           <Title>{esp_nombre}</Title>
@@ -92,6 +95,16 @@ const styles = StyleSheet.create({
   cardImage: {
     borderTopEndRadius: 10,
     borderTopStartRadius: 10,
+    
+  },
+  image: {
+    flex: 1,
+    width: 392,
+    height: 300,
+    resizeMode: 'stretch',
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
+    marginBottom: 20,
   },
 });
 
