@@ -71,7 +71,7 @@ const LeftMenu = ({navigation}) => {
             icon="home-outline"
             label="Espacios"
             style={styles.leftMenuItem}
-            onPress={() => navigation.navigate('Espacios')}
+            onPress={() => navigation.navigate('Dashboard')}
           />
         </View>
         <Drawer.CollapsedItem

@@ -14,6 +14,8 @@ import PerfilUsuario from './src/views/PerfilUsuario';
 import EditarPerfil from './src/views/EditarPerfil';
 import Foro from './src/views/Foro';
 import CrearPost from './src/views/CrearPost';
+import Post from './src/views/Post';
+import NuevoComentario from './src/views/NuevoComentario';
 
 import {AuthProvider} from './src/context/AuthContext';
 import {AlertaProvider} from './src/context/AlertaContext';
@@ -75,10 +77,26 @@ const App = () => {
                     }}
                   />
                   <Stack.Screen
+                    name="Post"
+                    component={Post}
+                    options={{
+                      title: 'Post',
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
                     name="CrearPost"
                     component={CrearPost}
                     options={{
                       title: 'Crear Post',
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="NuevoComentario"
+                    component={NuevoComentario}
+                    options={{
+                      title: 'Nuevo Comentario',
                       headerShown: false,
                     }}
                   />

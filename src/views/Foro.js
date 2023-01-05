@@ -1,15 +1,21 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useCallback} from 'react';
-import {View, Text, StyleSheet, TouchableWithoutFeedback, ScrollView, RefreshControl} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  RefreshControl,
+} from 'react-native';
 import {Avatar, Button, ActivityIndicator} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import LeftMenu from '../components/LeftMenu';
 import PostPreview from '../components/PostPreview';
 import useEspacio from '../hooks/useEspacio';
-import useAuth from '../hooks/useAuth';
 
 const Foro = ({navigation}) => {
   const {espacio, cargando, obtenerEspacio} = useEspacio();
-  const {auth, usu_perfil_img} = useAuth();
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -31,16 +37,15 @@ const Foro = ({navigation}) => {
 
       <View style={styles.cabeceraPost}>
         <Text style={styles.tituloForo}>Foro</Text>
-        <View style={styles.nuevoPostIcon}>
-          <TouchableWithoutFeedback
-            onPress={() => navigation.navigate('CrearPost')}>
+        <TouchableOpacity onPress={() => navigation.navigate('CrearPost')}>
+          <View style={styles.nuevoPostIcon}>
             <MaterialCommunityIcons
               name="pencil-plus-outline"
               color={'white'}
               size={20}
             />
-          </TouchableWithoutFeedback>
-        </View>
+          </View>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.filtroForo}>
@@ -62,7 +67,9 @@ const Foro = ({navigation}) => {
         <View style={styles.posts}>
           {espacio.esp_foro.length > 0 &&
             espacio.esp_foro.map(post => (
-              <PostPreview key={post._id} post={post} />
+              <TouchableOpacity onPress={() => navigation.navigate('Post', {post})} key={post._id}>
+                <PostPreview post={post} />
+              </TouchableOpacity>
             ))}
         </View>
       </ScrollView>
@@ -80,7 +87,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 100,
     position: 'absolute',
-    top: -5,
+    top: -30,
     right: 10,
     alignItems: 'center',
     justifyContent: 'center',

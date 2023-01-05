@@ -56,7 +56,7 @@ const CrearPost = ({navigation}) => {
     }
 
     if ( post_media_img !== undefined ) {
-      if (post_media_img.size > 5000000) {
+      if (post_media_img.size > 10000000) {
         ToastAndroid.show('El tamaño de la imagen no puede ser mayor a 5MB', ToastAndroid.SHORT );
         return;
       }
