@@ -1,14 +1,67 @@
 import React, {useState} from 'react';
-import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+  ToastAndroid,
+} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {TextInput, Button} from 'react-native-paper';
 import LeftMenu from '../components/LeftMenu';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import useForo from '../hooks/useForo';
+import DocumentPicker from 'react-native-document-picker';
+
 
 const NuevoComentario = ({navigation, route}) => {
-  const {post} = route.params;
+  const {titulo, id} = route.params;
+  const {crearComentario} = useForo();
 
-  const [comentario, setComentario] = useState('');
+  const [res_contenido, setResContenido] = useState('');
+  const [res_media_img, setResMediaImg] = useState(undefined);
+  const [res_media_id, setResMediaId] = useState('');
+  const [imgPreview, setImgPreview] = useState(null);
+
+  const getImage = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.images],
+      });
+      setImgPreview(res[0].uri);
+      setResMediaImg(res[0]);
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        throw err;
+      }
+    }
+  };
+
+  const handleSubmit = async () => {
+    if ([res_contenido].includes('')) {
+      ToastAndroid.show(
+        'Para crear un post al menos debe haber un titulo y un contenido.',
+        ToastAndroid.SHORT,
+      );
+      return;
+    }
+
+    if ( res_media_img !== undefined ) {
+      if (res_media_img.size > 10000000) {
+        ToastAndroid.show('El tamaño de la imagen no puede ser mayor a 5MB', ToastAndroid.SHORT );
+        return;
+      }
+    }
+
+
+    await crearComentario({res_contenido, res_media_id}, id, res_media_img);
+
+    navigation.goBack();
+  };
 
   return (
     <>
@@ -16,7 +69,7 @@ const NuevoComentario = ({navigation, route}) => {
 
       <View style={styles.cabecera}>
         <Text style={styles.textoCabecera}>Nuevo Comentario</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleSubmit}>
           <View style={styles.nuevoPostIcon}>
             <MaterialCommunityIcons
               name="pencil-plus-outline"
@@ -31,7 +84,7 @@ const NuevoComentario = ({navigation, route}) => {
 
         <View style={styles.contenedorComentario}>
           <View style={styles.contenedorTitulo}>
-            <Text style={styles.textoTitulo}>{post.post_titulo}</Text>
+            <Text style={styles.textoTitulo}>{titulo}</Text>
           </View>
           <View style={styles.contenedorInput}>
             <TextInput
@@ -39,27 +92,34 @@ const NuevoComentario = ({navigation, route}) => {
               style={styles.input}
               multiline={true}
               placeholder="Escribe tu comentario"
-              onChangeText={text => setComentario(text)}
-              value={comentario}
+              onChangeText={text => setResContenido(text)}
+              value={res_contenido}
             />
           </View>
-          <Image></Image>
+          {imgPreview && (
+            <View style={styles.contenedorImagen}>
+              <Image source={{uri: imgPreview}} style={styles.image} />
+            </View>
+          )}
         </View>
 
         {/* </View> */}
       </ScrollView>
       <View style={styles.contenedorBoton}>
         <Button
-          buttonColor="#26a0c9"
           mode="contained"
           style={styles.boton}
-          onPress={() => console.log('Subir Imagen')}>
-          Subir Imagen
+          onPress={getImage}>
+          {imgPreview ? 'Cambiar imagen' : 'Añadir imagen'}
         </Button>
       </View>
     </>
   );
 };
+
+const dimensions = Dimensions.get('window');
+const imageHeight = dimensions.height;
+const imageWidth = dimensions.width;
 
 const styles = StyleSheet.create({
   cabecera: {
@@ -104,6 +164,19 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#b3b3b3ff',
     padding: 10,
+  },
+  boton: {
+    backgroundColor: '#2698c9',
+    color: 'white',
+  },
+  contenedorImagen: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    height: imageHeight,
+    width: imageWidth,
+    resizeMode: 'stretch',
   },
 });
 
