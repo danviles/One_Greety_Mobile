@@ -67,6 +67,12 @@ const LeftMenu = ({navigation}) => {
             style={styles.leftMenuItem}
             onPress={() => navigation.navigate('Foro')}
           />
+           <Drawer.CollapsedItem
+            icon="chat-outline"
+            label="Chat"
+            style={styles.leftMenuItem}
+            onPress={() => navigation.navigate('Chat')}
+          />
           <Drawer.CollapsedItem
             icon="home-outline"
             label="Espacios"

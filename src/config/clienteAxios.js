@@ -1,9 +1,9 @@
 import axios from 'axios';
+import {BACKEND_URL} from '@env';
 
 const clienteAxios = axios.create({
-  // baseURL: 'https://quiet-eyrie-56964.herokuapp.com/api',
-  baseURL: 'https://one-greety-backend.onrender.com/api',
-
+  // baseURL: 'https://one-greety-backend.onrender.com/api',
+  baseURL: BACKEND_URL,
 });
 
 export default clienteAxios;

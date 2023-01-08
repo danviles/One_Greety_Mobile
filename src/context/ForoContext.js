@@ -101,8 +101,6 @@ const ForoProvider = ({ children} ) => {
       },
     };
 
-
-    console.log(postId)
     try {
       const {data} = await clienteAxios.post(`/foros/${postId}/respuestas`, resp, config);
     } catch (error) {

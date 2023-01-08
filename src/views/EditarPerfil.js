@@ -152,7 +152,11 @@ const EditarPerfil = ({navigation}) => {
     <>
       <View style={styles.container}>
         <TouchableOpacity onPress={getImage}>
+          {imgpreview === '' ? (
+            <Avatar.Icon size={90} icon="account" />
+          ) : (
           <Avatar.Image size={90} source={{uri: imgpreview}} />
+          )}
         </TouchableOpacity>
         <View style={styles.formInput}>
           <Text>Nombre</Text>

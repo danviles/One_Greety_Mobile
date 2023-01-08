@@ -9,7 +9,7 @@ import {
   ToastAndroid,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
-import {TextInput, Button} from 'react-native-paper';
+import {TextInput, Button, ActivityIndicator} from 'react-native-paper';
 import LeftMenu from '../components/LeftMenu';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import useForo from '../hooks/useForo';
@@ -18,7 +18,7 @@ import DocumentPicker from 'react-native-document-picker';
 
 const NuevoComentario = ({navigation, route}) => {
   const {titulo, id} = route.params;
-  const {crearComentario} = useForo();
+  const {crearComentario, postCargando} = useForo();
 
   const [res_contenido, setResContenido] = useState('');
   const [res_media_img, setResMediaImg] = useState(undefined);
@@ -62,6 +62,10 @@ const NuevoComentario = ({navigation, route}) => {
 
     navigation.goBack();
   };
+
+  if (postCargando) {
+    return <ActivityIndicator animating={true} color={'#be2e4a'} style={{flex: 1}}/>;
+  }
 
   return (
     <>
