@@ -8,13 +8,15 @@ import {
   ScrollView,
   RefreshControl,
 } from 'react-native';
-import {Avatar, Button, ActivityIndicator} from 'react-native-paper';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {Avatar, Button, ActivityIndicator, useTheme} from 'react-native-paper';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import Cabecera from '../components/Cabecera';
 import LeftMenu from '../components/LeftMenu';
 import PostPreview from '../components/PostPreview';
 import useEspacio from '../hooks/useEspacio';
 
 const Foro = ({navigation}) => {
+  const {colors} = useTheme();
   const {espacio, cargando, obtenerEspacio} = useEspacio();
 
   const [refreshing, setRefreshing] = useState(false);
@@ -33,9 +35,9 @@ const Foro = ({navigation}) => {
 
   return (
     <>
-      <LeftMenu navigation={navigation} />
+      {/* <LeftMenu navigation={navigation} /> */}
 
-      <View style={styles.cabeceraPost}>
+      {/* <View style={styles.cabeceraPost}>
         <Text style={styles.tituloForo}>Foro</Text>
         <TouchableOpacity onPress={() => navigation.navigate('CrearPost')}>
           <View style={styles.nuevoPostIcon}>
@@ -46,7 +48,9 @@ const Foro = ({navigation}) => {
             />
           </View>
         </TouchableOpacity>
-      </View>
+      </View> */}
+
+      <Cabecera titulo={'Foro'} icono={'pencil-plus-outline'} color={colors.verde} func={() => navigation.navigate('CrearPost')}/>
 
       <View style={styles.filtroForo}>
         <Button mode="outlined" style={styles.button}>

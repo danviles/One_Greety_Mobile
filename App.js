@@ -16,6 +16,7 @@ import Foro from './src/views/Foro';
 import CrearPost from './src/views/CrearPost';
 import Post from './src/views/Post';
 import NuevoComentario from './src/views/NuevoComentario';
+import Chat from './src/views/Chat';
 
 import {AuthProvider} from './src/context/AuthContext';
 import {AlertaProvider} from './src/context/AlertaContext';
@@ -30,7 +31,7 @@ const Stack = createStackNavigator();
 const App = () => {
   return (
     <NavigationContainer>
-      <Provider>
+      <Provider theme={theme}>
         <AlertaProvider>
           <EspacioProvider>
             <ForoProvider>
@@ -81,6 +82,14 @@ const App = () => {
                     component={Post}
                     options={{
                       title: 'Post',
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="Chat"
+                    component={Chat}
+                    options={{
+                      title: 'Chat',
                       headerShown: false,
                     }}
                   />

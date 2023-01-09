@@ -16,6 +16,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import LeftMenu from '../components/LeftMenu';
 import PostComponent from '../components/PostComponent';
 import RespuestaComponent from '../components/RespuestaComponent';
+import Cabecera from '../components/Cabecera';
 
 const Post = ({navigation, route}) => {
   const {post} = route.params;
@@ -23,11 +24,7 @@ const Post = ({navigation, route}) => {
 
   return (
     <>
-      <LeftMenu navigation={navigation} />
-
-      <View style={styles.cabeceraPost}>
-        <Text style={styles.tituloForo}>Foro</Text>
-      </View>
+      <Cabecera titulo={'Foro'} />
 
       <ScrollView>
         <View style={styles.contenedor}>

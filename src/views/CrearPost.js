@@ -8,14 +8,17 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import {Button, TextInput, ActivityIndicator, Avatar} from 'react-native-paper';
+import {Button, TextInput, ActivityIndicator, useTheme} from 'react-native-paper';
 import DocumentPicker from 'react-native-document-picker';
 import useEspacio from '../hooks/useEspacio';
 import useForo from '../hooks/useForo';
 import LeftMenu from '../components/LeftMenu';
+import Cabecera from '../components/Cabecera';
+import { theme } from '../core/theme';
 
 const CrearPost = ({navigation}) => {
   const {espacio} = useEspacio();
+  const {colors} = useTheme();
   const {postBorrador, setPostBorrador, crearPost, postCargando} = useForo();
 
   const [post_titulo, setTitulo] = useState('');
@@ -93,11 +96,8 @@ const CrearPost = ({navigation}) => {
 
   return (
     <>
-      <LeftMenu navigation={navigation} />
 
-      <View style={styles.cabeceraPost}>
-        <Text style={styles.tituloPost}>Nuevo Post</Text>
-      </View>
+      <Cabecera titulo={'Nuevo Post'} icono={'file-image-plus-outline'} color={colors.azul} func={getImage}/>
 
       <ScrollView>
         <View style={styles.contenedorFormulario}>
@@ -118,17 +118,9 @@ const CrearPost = ({navigation}) => {
             onChangeText={text => onChangeInputs('contenido', text)}
           />
 
-          <Text style={styles.tituloFormulario}>Imagen (opcional)</Text>
-          <TouchableOpacity onPress={getImage}>
-            {imgpreview === '' ? (
-              <Image
-                source={require('../assets/img_default.jpg')}
-                style={styles.image}
-              />
-            ) : (
-              <Image source={{uri: imgpreview}} style={styles.image} />
-            )}
-          </TouchableOpacity>
+          {imgpreview && (
+            <Image source={{uri: imgpreview}} style={styles.image} />
+          )}
 
           <Button mode="contained" style={styles.boton} onPress={handleSubmit}>
             Crear Post
@@ -140,14 +132,6 @@ const CrearPost = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  cabeceraPost: {
-    marginTop: 20,
-  },
-  tituloPost: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
   contenedorFormulario: {
     marginHorizontal: 20,
     marginTop: 20,
@@ -173,7 +157,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   boton: {
-    backgroundColor: '#be2e4a',
+    backgroundColor: theme.colors.verde,
     marginBottom: 20,
   },
 });

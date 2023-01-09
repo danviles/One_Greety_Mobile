@@ -1,12 +1,176 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  FlatList,
+  KeyboardAvoidingView,
+  Keyboard,
+} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
+import Cabecera from '../components/Cabecera';
+import {useTheme, TextInput} from 'react-native-paper';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import ChatMsg from '../components/ChatMsg';
+import useAuth from '../hooks/useAuth';
+import useEspacio from '../hooks/useEspacio';
+import io from 'socket.io-client';
+import {BACKEND_ROOT} from '@env';
 
-const Chat = () => {
+let socket;
+
+const Chat = ({theme}) => {
+  const {colors, chatColors} = useTheme();
+  const {espacio} = useEspacio();
+  const {auth} = useAuth();
+  const scrollsref = useRef();
+
+  const [showButton, setShowButton] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [chatMsgs, setChatMsgs] = useState([]);
+  const [userColor, setUserColor] = useState({});
+
+  useEffect(() => {
+    socket = io(BACKEND_ROOT);
+    socket.emit('chat room', espacio._id);
+    console.log('llamando 1 vez');
+  }, []);
+
+  useEffect(() => {
+    socket.on('chat actualizado', (espacio_id, msg) => {
+      console.log('chat actualizado', espacio_id, msg)
+      if (espacio_id === espacio._id) {
+        setChatMsgs(msg);
+      }
+    });
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      scrollsref.current.scrollToEnd({animated: true});
+    }, []),
+  );
+
+  const handleInputFocus = () => {
+    scrollsref.current.scrollToEnd({animated: true});
+  };
+
+  const handleSend = () => {
+    if (!userColor[auth.usu_nombre]) {
+      const keys = Object.keys(chatColors); // ['rojo', 'verde', 'azul']
+      const randomIndex = Math.floor(Math.random() * keys.length); // 0, 1 o 2
+      const randomColor = chatColors[keys[randomIndex]];
+      setUserColor({...userColor, [auth.usu_nombre]: randomColor});
+    }
+    // setChatMsgs([...chatMsgs, {usuario: auth.usu_nombre, msg: msg}]);
+    chatMsgs.push({usuario: auth.usu_nombre, msg: msg})
+    console.log('enviando', espacio._id, chatMsgs)
+    socket.emit('chat msg', espacio._id, chatMsgs);
+    setMsg('');
+    scrollsref.current.scrollToEnd({animated: true});
+    Keyboard.dismiss();
+  };
+
   return (
-    <View>
-      <Text>Menu Principal</Text>
-    </View>
+    <>
+      {showButton ? (
+        <Cabecera
+          titulo={'Chat'}
+          icono={'chevron-double-down'}
+          color={colors.azul}
+          func={() => scrollsref.current.scrollToEnd({animated: true})}
+        />
+      ) : (
+        <Cabecera titulo={'Chat'} />
+      )}
+
+      <KeyboardAvoidingView behavior="padding" >
+        <View style={styles.chatContenedor}>
+          <FlatList
+            onEndReached={() => setShowButton(false)}
+            onEndReachedThreshold={0.1}
+            onScrollBeginDrag={() => setShowButton(true)}
+            ref={scrollsref}
+            data={chatMsgs}
+            renderItem={({item}) => (
+              <ChatMsg
+                usuario={item.usuario}
+                color={userColor[item.usuario]}
+                msg={item.msg}
+              />
+            )}
+          />
+        </View>
+      </KeyboardAvoidingView>
+
+      <View style={styles.inputContenedor}>
+        <ScrollView>
+          <View style={styles.chatInputContenedor}>
+            <TextInput
+              style={styles.inputText}
+              theme={{borderColor: 100, colors: {primary: colors.azul}}}
+              placeholder="Mensaje"
+              dense={true}
+              multiline={true}
+              mode="outlined"
+              onFocus={handleInputFocus}
+              onChangeText={text => setMsg(text)}
+              value={msg}
+            />
+          </View>
+        </ScrollView>
+        <TouchableOpacity onPress={handleSend}>
+          <View style={styles.contenedorSend}>
+            <View style={[styles.icon, {backgroundColor: colors.azul}]}>
+              <MaterialCommunityIcons
+                name={'send-outline'}
+                color={'white'}
+                size={20}
+              />
+            </View>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </>
   );
 };
+
+const styles = StyleSheet.create({
+  inputContenedor: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginHorizontal: 10,
+    position: 'absolute',
+    backgroundColor: '#f2f2f2',
+    bottom: 0,
+  },
+  chatInputContenedor: {
+    maxHeight: 140,
+  },
+  inputText: {
+    marginVertical: 5,
+  },
+  contenedorSend: {
+    marginBottom: 5,
+  },
+  icon: {
+    width: 40,
+    height: 40,
+    marginLeft: 5,
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chatContenedor: {
+    marginHorizontal: 10,
+    marginBottom: 70,
+    maxHeight: 523,
+    minHeight: 240,
+    paddingBottom: 10,
+  },
+});
 
 export default Chat;

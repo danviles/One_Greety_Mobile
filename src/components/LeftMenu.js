@@ -9,9 +9,12 @@ import {
 import {Drawer} from 'react-native-paper';
 import useEspacio from '../hooks/useEspacio';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
 
-const LeftMenu = ({navigation}) => {
 
+const LeftMenu = ({}) => {
+
+  const navigation = useNavigation();
   const [abrirMenu] = useState(new Animated.Value(-100));
   const [mostrarmenu, setMostrarMenu] = useState(true);
 

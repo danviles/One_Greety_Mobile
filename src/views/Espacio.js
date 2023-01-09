@@ -16,7 +16,7 @@ const Espacio = ({navigation}) => {
 
   return (
     <>
-      <LeftMenu navigation={navigation} />
+      <LeftMenu />
       <View style={styles.espacioContainer}>
         <ImageBackground
           source={{

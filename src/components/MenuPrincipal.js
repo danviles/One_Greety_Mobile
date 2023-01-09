@@ -121,29 +121,6 @@ const MenuPrincipal = ({navigation}) => {
         }}
       />
       <Tab.Screen
-        name="Chat"
-        component={Chat}
-        options={{
-          headerShown: false,
-
-          headerStyle: {
-            backgroundColor: theme.colors.background,
-          },
-          headerTitleStyle: {
-            color: theme.colors.text,
-            fontWeight: 'bold',
-            fontSize: 22,
-          },
-          tabBarIcon: ({color}) => (
-            <MaterialCommunityIcons
-              name="chat-outline"
-              color={color}
-              size={32}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
         name="Perfil"
         component={Perfil}
         options={{

@@ -9,14 +9,16 @@ import {
   ToastAndroid,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
-import {TextInput, Button, ActivityIndicator} from 'react-native-paper';
+import {TextInput, Button, ActivityIndicator, useTheme} from 'react-native-paper';
 import LeftMenu from '../components/LeftMenu';
+import Cabecera from '../components/Cabecera';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import useForo from '../hooks/useForo';
 import DocumentPicker from 'react-native-document-picker';
 
 
 const NuevoComentario = ({navigation, route}) => {
+  const {colors} = useTheme();
   const {titulo, id} = route.params;
   const {crearComentario, postCargando} = useForo();
 
@@ -69,20 +71,9 @@ const NuevoComentario = ({navigation, route}) => {
 
   return (
     <>
-      <LeftMenu navigation={navigation} />
 
-      <View style={styles.cabecera}>
-        <Text style={styles.textoCabecera}>Nuevo Comentario</Text>
-        <TouchableOpacity onPress={handleSubmit}>
-          <View style={styles.nuevoPostIcon}>
-            <MaterialCommunityIcons
-              name="pencil-plus-outline"
-              color={'white'}
-              size={20}
-            />
-          </View>
-        </TouchableOpacity>
-      </View>
+      <Cabecera titulo={'Nuevo Comentario'} icono={'file-image-plus-outline'} color={colors.azul} func={getImage}/>
+
       <ScrollView>
         {/* <View style={styles.contenedorNuevoComentario}> */}
 
@@ -113,8 +104,8 @@ const NuevoComentario = ({navigation, route}) => {
         <Button
           mode="contained"
           style={styles.boton}
-          onPress={getImage}>
-          {imgPreview ? 'Cambiar imagen' : 'Añadir imagen'}
+          onPress={handleSubmit}>
+          Crear Comentario
         </Button>
       </View>
     </>
@@ -126,29 +117,7 @@ const imageHeight = dimensions.height;
 const imageWidth = dimensions.width;
 
 const styles = StyleSheet.create({
-  cabecera: {
-    marginTop: 20,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#b3b3b3ff',
-    marginBottom: 10,
-  },
-  textoCabecera: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  nuevoPostIcon: {
-    backgroundColor: '#26c963',
-    width: 40,
-    height: 40,
-    borderRadius: 100,
-    position: 'absolute',
-    top: -30,
-    right: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+
   contenedorComentario: {
     paddingHorizontal: 10,
   },
@@ -170,7 +139,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   boton: {
-    backgroundColor: '#2698c9',
+    backgroundColor: '#26c963',
     color: 'white',
   },
   contenedorImagen: {
