@@ -4,18 +4,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {dateFormat} from '../helpers/gestorFechas';
 import useEspacio from '../hooks/useEspacio';
 
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Image 
-} from 'react-native';
-import {
-  Card,
-  Title,
-  Avatar,
-} from 'react-native-paper';
+import {View, Text, StyleSheet, Pressable, Image} from 'react-native';
+import {Card, Title, Avatar} from 'react-native-paper';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 const PreviewEspacio = ({navigation, espacio}) => {
   const {
@@ -68,16 +59,15 @@ const PreviewEspacio = ({navigation, espacio}) => {
   return (
     <View style={{marginBottom: 10}}>
       <Card>
-        <Pressable  onPress={handleEspacio}>
+        <Pressable onPress={handleEspacio}>
           {/* <Card.Cover
             style={styles.cardImage}
             source={{
               uri: esp_img_portada,
             }}
           /> */}
-              <Image source={{uri: esp_img_portada}} style={styles.image} />
-
-        </Pressable >
+          <Image source={{uri: esp_img_portada}} style={styles.image} />
+        </Pressable>
         <Card.Content>
           <Title>{esp_nombre}</Title>
         </Card.Content>
@@ -95,7 +85,6 @@ const styles = StyleSheet.create({
   cardImage: {
     borderTopEndRadius: 10,
     borderTopStartRadius: 10,
-    
   },
   image: {
     flex: 1,

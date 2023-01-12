@@ -20,11 +20,12 @@ import Chat from './src/views/Chat';
 
 import {AuthProvider} from './src/context/AuthContext';
 import {AlertaProvider} from './src/context/AlertaContext';
+import {EspacioProvider} from './src/context/EspacioContext';
+import {ForoProvider} from './src/context/ForoContext';
+import {ChatProvider} from './src/context/ChatContext';
 
 import {Provider} from 'react-native-paper';
 import {theme} from './src/core/theme';
-import {EspacioProvider} from './src/context/EspacioContext';
-import {ForoProvider} from './src/context/ForoContext';
 
 const Stack = createStackNavigator();
 
@@ -34,124 +35,126 @@ const App = () => {
       <Provider theme={theme}>
         <AlertaProvider>
           <EspacioProvider>
-            <ForoProvider>
-              <AuthProvider>
-                <Stack.Navigator initialRouteName="SplashScreen">
-                  <Stack.Screen
-                    name="SplashScreen"
-                    component={Splash}
-                    options={{
-                      title: 'Splash Screen',
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="Dashboard"
-                    component={Dashboard}
-                    options={{
-                      title: 'Dashboard',
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="Espacios"
-                    component={Espacios}
-                    options={{
-                      title: 'Espacios',
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="Espacio"
-                    component={Espacio}
-                    options={{
-                      title: 'Espacio',
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="Foro"
-                    component={Foro}
-                    options={{
-                      title: 'Foro',
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="Post"
-                    component={Post}
-                    options={{
-                      title: 'Post',
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="Chat"
-                    component={Chat}
-                    options={{
-                      title: 'Chat',
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="CrearPost"
-                    component={CrearPost}
-                    options={{
-                      title: 'Crear Post',
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="NuevoComentario"
-                    component={NuevoComentario}
-                    options={{
-                      title: 'Nuevo Comentario',
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="EditarPerfil"
-                    component={EditarPerfil}
-                    options={{
-                      title: 'Splash Screen',
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="PerfilUsuario"
-                    component={PerfilUsuario}
-                    options={{
-                      title: 'Splash Screen',
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="Login"
-                    component={Login}
-                    options={{
-                      title: 'Iniciar Sesion',
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="CrearCuenta"
-                    component={CrearCuenta}
-                    options={{
-                      title: 'Crear Cuenta',
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="RecuperarPassword"
-                    component={RecuperarPassword}
-                    options={{
-                      title: 'Recuperar Contraseña',
-                      headerShown: false,
-                    }}
-                  />
-                </Stack.Navigator>
-              </AuthProvider>
-            </ForoProvider>
+            <ChatProvider>
+              <ForoProvider>
+                <AuthProvider>
+                  <Stack.Navigator initialRouteName="SplashScreen">
+                    <Stack.Screen
+                      name="SplashScreen"
+                      component={Splash}
+                      options={{
+                        title: 'Splash Screen',
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="Dashboard"
+                      component={Dashboard}
+                      options={{
+                        title: 'Dashboard',
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="Espacios"
+                      component={Espacios}
+                      options={{
+                        title: 'Espacios',
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="Espacio"
+                      component={Espacio}
+                      options={{
+                        title: 'Espacio',
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="Foro"
+                      component={Foro}
+                      options={{
+                        title: 'Foro',
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="Post"
+                      component={Post}
+                      options={{
+                        title: 'Post',
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="Chat"
+                      component={Chat}
+                      options={{
+                        title: 'Chat',
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="CrearPost"
+                      component={CrearPost}
+                      options={{
+                        title: 'Crear Post',
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="NuevoComentario"
+                      component={NuevoComentario}
+                      options={{
+                        title: 'Nuevo Comentario',
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="EditarPerfil"
+                      component={EditarPerfil}
+                      options={{
+                        title: 'Splash Screen',
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="PerfilUsuario"
+                      component={PerfilUsuario}
+                      options={{
+                        title: 'Splash Screen',
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="Login"
+                      component={Login}
+                      options={{
+                        title: 'Iniciar Sesion',
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="CrearCuenta"
+                      component={CrearCuenta}
+                      options={{
+                        title: 'Crear Cuenta',
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="RecuperarPassword"
+                      component={RecuperarPassword}
+                      options={{
+                        title: 'Recuperar Contraseña',
+                        headerShown: false,
+                      }}
+                    />
+                  </Stack.Navigator>
+                </AuthProvider>
+              </ForoProvider>
+            </ChatProvider>
           </EspacioProvider>
         </AlertaProvider>
       </Provider>

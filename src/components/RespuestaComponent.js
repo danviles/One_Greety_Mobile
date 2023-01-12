@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   postImagen: {
-    height: imageHeight,
+    height: '50%',
     width: imageWidth,
     resizeMode: 'stretch',
   },

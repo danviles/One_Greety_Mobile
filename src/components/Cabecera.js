@@ -15,10 +15,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import useForo from '../hooks/useForo';
 import DocumentPicker from 'react-native-document-picker';
 
-const Cabecera = ({titulo, icono, color, func}) => {
+const Cabecera = ({titulo, icono, color, func, lm=true}) => {
   return (
     <>
+    {lm &&
       <LeftMenu />
+    }
       <View style={styles.cabecera}>
         <Text style={styles.textoCabecera}>{titulo}</Text>
         {func && (

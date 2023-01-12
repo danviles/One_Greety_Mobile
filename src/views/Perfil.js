@@ -44,7 +44,7 @@ const Perfil = ({navigation}) => {
             <View style={styles.contenedorTextoPerfil}>
               <Text style={styles.textoPerfil}>{usu_nombre}</Text>
               <TouchableOpacity
-                onPress={() => navigation.navigate('PerfilUsuario')}>
+                onPress={() => navigation.navigate('PerfilUsuario', {id: auth._id})}>
                 <Text style={styles.textoVerPerfil}>Ver Perfil</Text>
               </TouchableOpacity>
             </View>

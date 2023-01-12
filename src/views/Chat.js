@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
@@ -16,36 +17,36 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import ChatMsg from '../components/ChatMsg';
 import useAuth from '../hooks/useAuth';
 import useEspacio from '../hooks/useEspacio';
+import useChat from '../hooks/useChat';
 import io from 'socket.io-client';
 import {BACKEND_ROOT} from '@env';
 
 let socket;
 
-const Chat = ({theme}) => {
+const Chat = ({navigation}) => {
   const {colors, chatColors} = useTheme();
   const {espacio} = useEspacio();
   const {auth} = useAuth();
+  const {chatMsgs, addChatMsg, actualizarChat} = useChat();
   const scrollsref = useRef();
 
   const [showButton, setShowButton] = useState(false);
   const [msg, setMsg] = useState('');
-  const [chatMsgs, setChatMsgs] = useState([]);
   const [userColor, setUserColor] = useState({});
 
   useEffect(() => {
     socket = io(BACKEND_ROOT);
     socket.emit('chat room', espacio._id);
-    console.log('llamando 1 vez');
   }, []);
 
   useEffect(() => {
-    socket.on('chat actualizado', (espacio_id, msg) => {
-      console.log('chat actualizado', espacio_id, msg)
-      if (espacio_id === espacio._id) {
-        setChatMsgs(msg);
-      }
-    });
-  }, []);
+    const eventListener = data => {
+      actualizarChat(data);
+    };
+    socket.on('msg agregado', eventListener);
+
+    return () => socket.off('msg agregado', eventListener);
+  });
 
   useFocusEffect(
     React.useCallback(() => {
@@ -64,10 +65,9 @@ const Chat = ({theme}) => {
       const randomColor = chatColors[keys[randomIndex]];
       setUserColor({...userColor, [auth.usu_nombre]: randomColor});
     }
-    // setChatMsgs([...chatMsgs, {usuario: auth.usu_nombre, msg: msg}]);
-    chatMsgs.push({usuario: auth.usu_nombre, msg: msg})
-    console.log('enviando', espacio._id, chatMsgs)
-    socket.emit('chat msg', espacio._id, chatMsgs);
+
+    addChatMsg({usuid: auth._id, usuario: auth.usu_nombre, msg}, espacio._id);
+
     setMsg('');
     scrollsref.current.scrollToEnd({animated: true});
     Keyboard.dismiss();
@@ -86,20 +86,28 @@ const Chat = ({theme}) => {
         <Cabecera titulo={'Chat'} />
       )}
 
-      <KeyboardAvoidingView behavior="padding" >
+      <KeyboardAvoidingView behavior="padding">
         <View style={styles.chatContenedor}>
           <FlatList
+            keyboardShouldPersistTaps="handled"
             onEndReached={() => setShowButton(false)}
             onEndReachedThreshold={0.1}
             onScrollBeginDrag={() => setShowButton(true)}
+            getItemLayout={(data, index) => ({
+              length: 50,
+              offset: 50 * index,
+              index,
+            })}
             ref={scrollsref}
             data={chatMsgs}
-            renderItem={({item}) => (
-              <ChatMsg
-                usuario={item.usuario}
-                color={userColor[item.usuario]}
-                msg={item.msg}
-              />
+            renderItem={({item, index}) => (
+                <ChatMsg
+                  navigation={navigation}
+                  id={item.usuid}
+                  usuario={item.usuario}
+                  color={userColor[item.usuario]}
+                  msg={item.msg}
+                />
             )}
           />
         </View>
@@ -152,6 +160,7 @@ const styles = StyleSheet.create({
   },
   inputText: {
     marginVertical: 5,
+    height: 40,
   },
   contenedorSend: {
     marginBottom: 5,

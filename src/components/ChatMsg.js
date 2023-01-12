@@ -1,15 +1,24 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 
-const ChatMsg = ({color, usuario, msg}) => {
+const ChatMsg = ({navigation, id, color, usuario, msg}) => {
+  const handlePerfilUsuario = () => {
+    navigation.navigate('PerfilUsuario', {id});
+  };
   return (
-    <View style={styles.chatMsgContenedor}>
-      <TouchableOpacity>
-        <Text style={[styles.chatUsuario, {color: color}]}>{usuario}: </Text>
-      </TouchableOpacity>
-      <Text style={styles.chatMsg}>{msg}</Text>
-    </View>
+    <>
+      <View style={styles.chatMsgContenedor}>
+        <TouchableOpacity onPress={handlePerfilUsuario}>
+          <Text style={[styles.chatUsuario, {color: color}]}>{usuario}: </Text>
+        </TouchableOpacity>
+        <Text style={styles.chatMsg}>{msg}</Text>
+      </View>
+    </>
   );
 };
 
