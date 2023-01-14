@@ -8,15 +8,16 @@ import {
 } from 'react-native';
 import {Drawer} from 'react-native-paper';
 import useEspacio from '../hooks/useEspacio';
+import useAuth from '../hooks/useAuth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
-
+import {useNavigation} from '@react-navigation/native';
 
 const LeftMenu = ({}) => {
-
   const navigation = useNavigation();
   const [abrirMenu] = useState(new Animated.Value(-100));
   const [mostrarmenu, setMostrarMenu] = useState(true);
+  const {espacio} = useEspacio();
+  const {auth} = useAuth();
 
   const handleMenu = () => {
     if (mostrarmenu) {
@@ -35,11 +36,18 @@ const LeftMenu = ({}) => {
     setMostrarMenu(!mostrarmenu);
   };
 
-
   const estiloAnimacionAbrir = {
     transform: [{translateX: abrirMenu}],
   };
 
+
+  if (!espacio.esp_seguidores.find(item => item === auth._id)) {
+    return (
+      <Animated.View style={styles.botonMenu}>
+        <MaterialCommunityIcons name="menu" color={'#b4b4b4'} size={20} />
+      </Animated.View>
+    );
+  }
 
   return (
     <>
@@ -70,7 +78,7 @@ const LeftMenu = ({}) => {
             style={styles.leftMenuItem}
             onPress={() => navigation.navigate('Foro')}
           />
-           <Drawer.CollapsedItem
+          <Drawer.CollapsedItem
             icon="chat-outline"
             label="Chat"
             style={styles.leftMenuItem}
@@ -108,11 +116,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
     justifyContent: 'space-between',
   },
-  leftMenuItemsContainer: {
-
-  },
-  leftMenuItem: {
-  },
+  leftMenuItemsContainer: {},
+  leftMenuItem: {},
   botonMenu: {
     position: 'absolute',
     height: 40,

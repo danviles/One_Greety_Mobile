@@ -1,18 +1,43 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, ImageBackground} from 'react-native';
 import {Paragraph, Button, ActivityIndicator} from 'react-native-paper';
+import {useFocusEffect} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import LeftMenu from '../components/LeftMenu';
 import useEspacio from '../hooks/useEspacio';
 import useAuth from '../hooks/useAuth';
 
 const Espacio = ({navigation}) => {
-  const {espacio, cargando} = useEspacio();
-  const { auth } = useAuth();
+  const {espacio, agregarSeguidor, agregarPeticion, cargando} = useEspacio();
+  const [esSeguidor, setEsSeguidor] = useState(false);
+  const {auth} = useAuth();
+
+  useEffect(() => {
+    if(espacio && auth) {
+      if (espacio.esp_seguidores.find(item => item === auth._id)) {
+        setEsSeguidor(true);
+      } else {
+        setEsSeguidor(false);
+      }
+    }
+  }, [espacio, auth]);
+
+
+  const handleSubmit = () => {
+    if (espacio.esp_acceso) {
+      agregarSeguidor(espacio._id);
+    } else {
+      agregarPeticion(espacio._id);
+    }
+  };
+
 
   if (cargando) {
-    return <ActivityIndicator animating={true} color={'#be2e4a'} style={{flex: 1}}/>;
+    return (
+      <ActivityIndicator animating={true} color={'#be2e4a'} style={{flex: 1}} />
+    );
   }
+
 
   return (
     <>
@@ -41,12 +66,11 @@ const Espacio = ({navigation}) => {
             <Paragraph style={styles.textDescripcion}>
               {espacio.esp_descripcion}
             </Paragraph>
-            <Button
-              mode="contained"
-              style={styles.button}
-            >
-              {espacio.esp_acceso ? 'Unirte al club' : 'Pedir acceso'}
-            </Button>
+            {!esSeguidor && (
+              <Button mode="contained" style={styles.button} onPress={handleSubmit}>
+                {espacio.esp_acceso ? 'Unirte al club' : 'Pedir acceso'}
+              </Button>
+            )}
           </View>
         </ImageBackground>
       </View>

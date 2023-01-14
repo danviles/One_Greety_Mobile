@@ -4,7 +4,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {dateFormat} from '../helpers/gestorFechas';
 import useEspacio from '../hooks/useEspacio';
 
-import {View, Text, StyleSheet, Pressable, Image} from 'react-native';
+import {View, Text, StyleSheet, Pressable, Image, Dimensions} from 'react-native';
 import {Card, Title, Avatar} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
@@ -81,6 +81,10 @@ const PreviewEspacio = ({navigation, espacio}) => {
   );
 };
 
+const dimension = Dimensions.get('window');
+const width = dimension.width;
+const height = dimension.height;
+
 const styles = StyleSheet.create({
   cardImage: {
     borderTopEndRadius: 10,
@@ -88,8 +92,8 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    width: 392,
-    height: 300,
+    width: '100%',
+    height: height * 0.5,
     resizeMode: 'stretch',
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,

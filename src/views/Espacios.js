@@ -4,17 +4,10 @@ import React, {useEffect, useState, useCallback} from 'react';
 import useAuth from '../hooks/useAuth';
 import useEspacio from '../hooks/useEspacio';
 import PreviewEspacio from '../components/PreviewEspacio';
+import Background from '../components/Backgorund';
 
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  RefreshControl,
-} from 'react-native';
-import {
-  Searchbar,
-} from 'react-native-paper';
-
+import {View, StyleSheet, ScrollView, RefreshControl, Dimensions} from 'react-native';
+import {Searchbar} from 'react-native-paper';
 
 const Espacios = ({navigation}) => {
   const {auth, hacerLogout, cargando, obtenerPerfil} = useAuth();
@@ -24,38 +17,28 @@ const Espacios = ({navigation}) => {
 
   const onChangeSearch = query => setSearchQuery(query);
 
-  // const filter =
-  //   searchQuery === ''
-  //     ? []
-  //     : concerts
-  //         .filter(concert =>
-  //           concert.title.toLowerCase().includes(searchQuery.toLowerCase()),
-  //         )
-  //         .concat(
-  //           concerts.filter(concert =>
-  //             concert.genre.toLowerCase().includes(searchQuery.toLowerCase()),
-  //           ),
-  //         )
-  //         .concat(
-  //           concerts.filter(concert =>
-  //             concert.place.toLowerCase().includes(searchQuery.toLowerCase()),
-  //           ),
-  //         )
-  //         .reduce((acc, item) => {
-  //           if (!acc.includes(item)) {
-  //             acc.push(item);
-  //           }
-  //           return acc;
-  //         }, []);
-
-  useEffect(() => {
-    // obtenerPerfil();
-    // if (auth._id) {
-    //   // Obtener llenar espacios del usuario
-    //   console.log('Obteniendo espacios del usuario..');
-    // }
-    // obtenerEspacios();
-  }, []);
+  const filter =
+    searchQuery === ''
+      ? espacios
+      : espacios
+          .filter(espacio =>
+            espacio.esp_nombre
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()),
+          )
+          .concat(
+            espacios.filter(espacio =>
+              espacio.esp_administrador.usu_nombre
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()),
+            ),
+          )
+          .reduce((acc, item) => {
+            if (!acc.includes(item)) {
+              acc.push(item);
+            }
+            return acc;
+          }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -65,21 +48,37 @@ const Espacios = ({navigation}) => {
   }, []);
 
   return (
-    <View>
-      <Searchbar placeholder="Buscar espacio" style={styles.buscador} />
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-      <View style={styles.espacios}>
-          {espacios.length > 0 &&
+    <>
+      <Background>
+        <View>
+          <Searchbar
+            placeholder="Buscar espacio, creador..."
+            style={styles.buscador}
+            onChangeText={text => onChangeSearch(text)}
+            value={searchQuery}
+          />
+          <ScrollView
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }>
+            <View style={styles.espacios}>
+              {/* {espacios.length > 0 &&
             espacios.map(espacio => (
               <PreviewEspacio key={espacio._id} navigation={navigation} espacio={espacio} />
-            ))}
-      </View>
-        </ScrollView>
-    </View>
+            ))} */}
+              {filter.length > 0 &&
+                filter.map(espacio => (
+                  <PreviewEspacio
+                    key={espacio._id}
+                    navigation={navigation}
+                    espacio={espacio}
+                  />
+                ))}
+            </View>
+          </ScrollView>
+        </View>
+      </Background>
+    </>
   );
 };
 

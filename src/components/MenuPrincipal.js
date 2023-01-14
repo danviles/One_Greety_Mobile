@@ -71,10 +71,10 @@ const MenuPrincipal = ({navigation}) => {
         tabBarStyle: {
           backgroundColor: 'rgba(24, 19, 24, 0.8)',
           position: 'absolute',
-          marginHorizontal: 50,
+          marginHorizontal: 100,
           borderTopLeftRadius: 50,
           borderTopRightRadius: 50,
-          borderWidth: 2,
+          borderWidth: 1,
           padding: 1,
         },
         tabBarActiveTintColor: '#fd7175',

@@ -7,6 +7,7 @@ export const theme = {
     text: '#fff',
     verde: '#26c963',
     azul: '#2698c9',
+    background: '#ffffff',
   },
   chatColors: {
     c1: '#f44336',
