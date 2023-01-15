@@ -23,15 +23,26 @@ const Foro = ({navigation}) => {
   const [filterDestacados, setFilterDestacados] = useState(true);
   const [filterRecientes, setFilterRecientes] = useState(false);
   const [filterActividad, setFilterActividad] = useState(false);
+  const [filter, setFilter] = useState('Destacados');
   const [fposts, setFposts] = useState([]);
 
-  useEffect(() => {
-    setFposts([...espacio.esp_foro]);
-    sortDestacados();
-  }, [espacio]);
+  // useEffect(() => {
+  //   setFposts([...espacio.esp_foro]);
+  //   sortDestacados();
+  // }, [espacio]);
 
   useEffect(() => {
-  }, [fposts, filterDestacados, filterRecientes, filterActividad]);
+    if (filter === 'Destacados') {
+      sortDestacados();
+    }
+    if (filter === 'Recientes') {
+      sortRecientes();
+    }
+    if (filter === 'Actividad') {
+      sortActividad();
+    }
+
+  }, [filter]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -45,19 +56,16 @@ const Foro = ({navigation}) => {
         setFilterDestacados(true);
         setFilterRecientes(false);
         setFilterActividad(false);
-        filterPost();
         break;
       case 'Recientes':
         setFilterDestacados(false);
         setFilterRecientes(true);
         setFilterActividad(false);
-        filterPost();
         break;
       case 'Actividad':
         setFilterDestacados(false);
         setFilterRecientes(false);
         setFilterActividad(true);
-        filterPost();
         break;
       default:
         break;
@@ -65,28 +73,26 @@ const Foro = ({navigation}) => {
   };
 
   const sortDestacados = () => {
-    const cposts = [...espacio.esp_foro];
-    let fposts = cposts
+    const fposts = [...espacio.esp_foro]
       .filter(post => post.post_tags.includes('Destacado'))
       .concat(
-        espacio.esp_foro.filter(post => !post.post_tags.includes('Destacado')),
+        [...espacio.esp_foro].filter(post => !post.post_tags.includes('Destacado')),
       );
-    setFposts([...fposts]);
+    setFposts(fposts);
     handleFilter('Destacados');
   };
 
   const sortRecientes = () => {
-    const cposts = [...espacio.esp_foro];
-    let fposts = cposts.sort(
+    const fposts = [...espacio.esp_foro].sort(
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
     );
-    setFposts([...fposts]);
+    setFposts(fposts);
     handleFilter('Recientes');
   };
 
   const sortActividad = () => {
-    const cposts = [...espacio.esp_foro];
-    let fposts = cposts.sort(
+
+    const fposts = [...espacio.esp_foro].sort(
       (a, b) =>
         b.post_comentarios.length +
         b.post_comentarios.reduce(
@@ -99,7 +105,7 @@ const Foro = ({navigation}) => {
             0,
           )),
     );
-    setFposts([...fposts]);
+    setFposts(fposts);
     handleFilter('Actividad');
   };
 
@@ -182,21 +188,21 @@ const Foro = ({navigation}) => {
           textColor={!filterDestacados && 'black'}
           mode="outlined"
           style={styles.button}
-          onPress={sortDestacados}>
+          onPress={() => setFilter('Destacados')}>
           Destacados
         </Button>
         <Button
           textColor={!filterRecientes && 'black'}
           mode="outlined"
           style={styles.button}
-          onPress={sortRecientes}>
+          onPress={() => setFilter('Recientes')}>
           Recientes
         </Button>
         <Button
           textColor={!filterActividad && 'black'}
           mode="outlined"
           style={styles.button}
-          onPress={sortActividad}>
+          onPress={() => setFilter('Actividad')}>
           Actividad
         </Button>
       </View>
