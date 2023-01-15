@@ -48,12 +48,12 @@ const EditarPerfil = ({navigation}) => {
     obtenerPerfil();
     setNombre(auth.usu_nombre);
     setImgId(auth.usu_img_id);
-    setImgPreview(auth.usu_perfil_img);
-    setTwitter(auth.usu_twitter.replace(linkRegex, '').replace('/', ''));
-    setYoutube(auth.usu_youtube.replace(linkRegex, '').replace('/', ''));
-    setSoundCloud(auth.usu_soundcloud.replace(linkRegex, '').replace('/', ''));
-    setInstagram(auth.usu_instagram.replace(linkRegex, '').replace('/', ''));
-    setTiktok(auth.usu_tiktok.replace(linkRegex, '').replace('/', ''));
+    setImgPreview(auth.usu_perfil_img); 
+    auth.usu_twitter && setTwitter(auth.usu_twitter.replace(linkRegex, '').replace('/', ''));
+    auth.usu_youtube && setYoutube(auth.usu_youtube.replace(linkRegex, '').replace('/', ''));
+    auth.usu_soundcloud && setSoundCloud(auth.usu_soundcloud.replace(linkRegex, '').replace('/', ''));
+    auth.usu_instagram && setInstagram(auth.usu_instagram.replace(linkRegex, '').replace('/', ''));
+    auth.usu_tiktok && setTiktok(auth.usu_tiktok.replace(linkRegex, '').replace('/', ''));
   }, []);
 
   const handleSubmit = async () => {

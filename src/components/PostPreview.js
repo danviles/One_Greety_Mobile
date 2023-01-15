@@ -2,12 +2,12 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Avatar} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import {tiempoTranscurrido} from '../helpers/gestorFechas';
 
 const PostPreview = ({post}) => {
+  const {post_titulo, post_creador, createdAt, post_comentarios } = post;
 
-  const {post_titulo, post_creador} = post;
-
+  const comentarios = post_comentarios.length + post_comentarios.reduce((acc, cur) => acc + cur.res_comentarios.length,  0);
 
   return (
     <View style={styles.postContenedor}>
@@ -15,22 +15,30 @@ const PostPreview = ({post}) => {
         <View style={styles.postPerfil}>
           <Avatar.Image size={50} source={{uri: post_creador.usu_perfil_img}} />
           <View style={styles.postPerfilTexto}>
-            <Text style={styles.postUsuarioTexto}>{post_creador.usu_nombre}</Text>
-            <Text style={styles.postTiempoTexto}>hace 1 hora</Text>
+            <Text style={styles.postUsuarioTexto}>
+              {post_creador.usu_nombre}
+            </Text>
+            <Text style={styles.postTiempoTexto}>
+              {tiempoTranscurrido(createdAt)}
+            </Text>
           </View>
         </View>
-        <View style={styles.postEtiqueta}>
-          <MaterialCommunityIcons
-            name="star-outline"
-            color={'white'}
-            size={30}
-          />
-        </View>
+        {post.post_tags.includes('Destacado') && (
+          <View style={styles.postEtiqueta}>
+            <MaterialCommunityIcons
+              name="star-outline"
+              color={'white'}
+              size={30}
+            />
+          </View>
+        )}
       </View>
       <View style={styles.postTituloContenedor}>
         <Text style={styles.postTitulo}>{post_titulo}</Text>
         <View style={styles.postContadorContenedor}>
-          <Text style={styles.postContadorTexto}>0</Text>
+          <Text style={styles.postContadorTexto}>
+            {comentarios}
+          </Text>
           <MaterialCommunityIcons
             name="comment-text-outline"
             color={'grey'}

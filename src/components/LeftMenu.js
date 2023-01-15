@@ -16,7 +16,7 @@ const LeftMenu = ({}) => {
   const navigation = useNavigation();
   const [abrirMenu] = useState(new Animated.Value(-100));
   const [mostrarmenu, setMostrarMenu] = useState(true);
-  const {espacio} = useEspacio();
+  const {espacio, dejarEspacio} = useEspacio();
   const {auth} = useAuth();
 
   const handleMenu = () => {
@@ -39,6 +39,10 @@ const LeftMenu = ({}) => {
   const estiloAnimacionAbrir = {
     transform: [{translateX: abrirMenu}],
   };
+
+  const handleDejarEspacio = () => {
+    dejarEspacio(espacio._id);
+  }
 
 
   if (!espacio.esp_seguidores.find(item => item === auth._id)) {
@@ -95,6 +99,7 @@ const LeftMenu = ({}) => {
           icon="heart-broken-outline"
           label="Dejar de seguir"
           style={styles.leftMenuItem}
+          onPress={handleDejarEspacio}
         />
       </Animated.View>
     </>

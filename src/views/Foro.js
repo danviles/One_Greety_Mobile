@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import {Avatar, Button, ActivityIndicator, useTheme} from 'react-native-paper';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 import Cabecera from '../components/Cabecera';
 import LeftMenu from '../components/LeftMenu';
 import PostPreview from '../components/PostPreview';
@@ -20,12 +20,147 @@ const Foro = ({navigation}) => {
   const {espacio, cargando, obtenerEspacio} = useEspacio();
 
   const [refreshing, setRefreshing] = useState(false);
+  const [filterDestacados, setFilterDestacados] = useState(true);
+  const [filterRecientes, setFilterRecientes] = useState(false);
+  const [filterActividad, setFilterActividad] = useState(false);
+  const [fposts, setFposts] = useState([]);
+
+  useEffect(() => {
+    setFposts([...espacio.esp_foro]);
+    sortDestacados();
+  }, [espacio]);
+
+  useEffect(() => {
+  }, [fposts, filterDestacados, filterRecientes, filterActividad]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     obtenerEspacio(espacio._id);
     setRefreshing(false);
   }, []);
+
+  const handleFilter = op => {
+    switch (op) {
+      case 'Destacados':
+        setFilterDestacados(true);
+        setFilterRecientes(false);
+        setFilterActividad(false);
+        filterPost();
+        break;
+      case 'Recientes':
+        setFilterDestacados(false);
+        setFilterRecientes(true);
+        setFilterActividad(false);
+        filterPost();
+        break;
+      case 'Actividad':
+        setFilterDestacados(false);
+        setFilterRecientes(false);
+        setFilterActividad(true);
+        filterPost();
+        break;
+      default:
+        break;
+    }
+  };
+
+  const sortDestacados = () => {
+    const cposts = [...espacio.esp_foro];
+    let fposts = cposts
+      .filter(post => post.post_tags.includes('Destacado'))
+      .concat(
+        espacio.esp_foro.filter(post => !post.post_tags.includes('Destacado')),
+      );
+    setFposts([...fposts]);
+    handleFilter('Destacados');
+  };
+
+  const sortRecientes = () => {
+    const cposts = [...espacio.esp_foro];
+    let fposts = cposts.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+    );
+    setFposts([...fposts]);
+    handleFilter('Recientes');
+  };
+
+  const sortActividad = () => {
+    const cposts = [...espacio.esp_foro];
+    let fposts = cposts.sort(
+      (a, b) =>
+        b.post_comentarios.length +
+        b.post_comentarios.reduce(
+          (acc, cur) => acc + cur.res_comentarios.length,
+          0,
+        ) -
+        (a.post_comentarios.length +
+          a.post_comentarios.reduce(
+            (acc, cur) => acc + cur.res_comentarios.length,
+            0,
+          )),
+    );
+    setFposts([...fposts]);
+    handleFilter('Actividad');
+  };
+
+  // const filter =
+  // searchQuery === ''
+  //   ? espacios
+  //   : espacios
+  //       .filter(espacio =>
+  //         espacio.esp_nombre
+  //           .toLowerCase()
+  //           .includes(searchQuery.toLowerCase()),
+  //       )
+  //       .concat(
+  //         espacios.filter(espacio =>
+  //           espacio.esp_administrador.usu_nombre
+  //             .toLowerCase()
+  //             .includes(searchQuery.toLowerCase()),
+  //         ),
+  //       )
+  //       .reduce((acc, item) => {
+  //         if (!acc.includes(item)) {
+  //           acc.push(item);
+  //         }
+  //         return acc;
+  //       }, []);
+
+  const filterPost = () => {
+    let fposts = [];
+    if (filterDestacados) {
+      fposts = espacio.esp_foro
+        .filter(post => post.post_tags.includes('Destacado'))
+        .concat(
+          espacio.esp_foro.filter(
+            post => !post.post_tags.includes('Destacado'),
+          ),
+        );
+      setFposts(fposts);
+    } else if (filterRecientes) {
+      fposts = espacio.esp_foro.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+      );
+      setFposts(fposts);
+    } else if (filterActividad) {
+      fposts = espacio.esp_foro.sort(
+        (a, b) =>
+          b.post_comentarios.length +
+          b.post_comentarios.reduce(
+            (acc, cur) => acc + cur.res_comentarios.length,
+            0,
+          ) -
+          (a.post_comentarios.length +
+            a.post_comentarios.reduce(
+              (acc, cur) => acc + cur.res_comentarios.length,
+              0,
+            )),
+      );
+      setFposts(fposts);
+    }
+  };
+
+  // post_comentarios.length + post_comentarios.reduce((acc, cur) => acc + cur.res_comentarios.length,  0)
 
   if (cargando) {
     return (
@@ -35,31 +170,33 @@ const Foro = ({navigation}) => {
 
   return (
     <>
-      {/* <LeftMenu navigation={navigation} /> */}
-
-      {/* <View style={styles.cabeceraPost}>
-        <Text style={styles.tituloForo}>Foro</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('CrearPost')}>
-          <View style={styles.nuevoPostIcon}>
-            <MaterialCommunityIcons
-              name="pencil-plus-outline"
-              color={'white'}
-              size={20}
-            />
-          </View>
-        </TouchableOpacity>
-      </View> */}
-
-      <Cabecera titulo={'Foro'} icono={'pencil-plus-outline'} color={colors.verde} func={() => navigation.navigate('CrearPost')}/>
+      <Cabecera
+        titulo={'Foro'}
+        icono={'pencil-plus-outline'}
+        color={colors.verde}
+        func={() => navigation.navigate('CrearPost')}
+      />
 
       <View style={styles.filtroForo}>
-        <Button mode="outlined" style={styles.button}>
+        <Button
+          textColor={!filterDestacados && 'black'}
+          mode="outlined"
+          style={styles.button}
+          onPress={sortDestacados}>
           Destacados
         </Button>
-        <Button textColor="black" mode="outlined" style={styles.button}>
+        <Button
+          textColor={!filterRecientes && 'black'}
+          mode="outlined"
+          style={styles.button}
+          onPress={sortRecientes}>
           Recientes
         </Button>
-        <Button textColor="black" mode="outlined" style={styles.button}>
+        <Button
+          textColor={!filterActividad && 'black'}
+          mode="outlined"
+          style={styles.button}
+          onPress={sortActividad}>
           Actividad
         </Button>
       </View>
@@ -69,9 +206,17 @@ const Foro = ({navigation}) => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
         <View style={styles.posts}>
-          {espacio.esp_foro.length > 0 &&
+          {/* {espacio.esp_foro.length > 0 &&
             espacio.esp_foro.map(post => (
               <TouchableOpacity onPress={() => navigation.navigate('Post', {post})} key={post._id}>
+                <PostPreview post={post} />
+              </TouchableOpacity>
+            ))} */}
+          {fposts.length > 0 &&
+            fposts.map(post => (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Post', {post})}
+                key={post._id}>
                 <PostPreview post={post} />
               </TouchableOpacity>
             ))}

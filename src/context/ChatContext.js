@@ -2,8 +2,8 @@ import React, {createContext, useEffect, useState} from 'react';
 import io from 'socket.io-client';
 import {BACKEND_ROOT} from '@env';
 
-let socket;
-
+let socket; 
+ 
 const ChatContext = createContext();
 
 const ChatProvider = ({ children} ) => {

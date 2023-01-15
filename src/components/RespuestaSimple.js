@@ -9,10 +9,10 @@ import {
 } from 'react-native';
 import {Avatar} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {tiempoTranscurrido} from '../helpers/gestorFechas';
 
 const RespuestaSimple = ({navigation, com, post}) => {
-  const {post_creador} = post;
-  const {res_creador, res_contenido} = com;
+  const {res_creador, res_contenido, res_likes, res_media_img, createdAt} = com;
 
   return (
     <View style={styles.respuestaSimpleContenedor}>
@@ -23,7 +23,7 @@ const RespuestaSimple = ({navigation, com, post}) => {
             <Text style={styles.postUsuarioTexto}>
               {res_creador.usu_nombre}
             </Text>
-            <Text style={styles.postTiempoTexto}>hace 1 hora</Text>
+            <Text style={styles.postTiempoTexto}>{tiempoTranscurrido(createdAt)}</Text>
           </View>
         </View>
       </View>
@@ -34,7 +34,7 @@ const RespuestaSimple = ({navigation, com, post}) => {
         <View style={styles.postImagenContenedor}>
           <Image
             style={styles.postImagen}
-            source={{uri: com.res_media_img}}
+            source={{uri: res_media_img}}
           />
         </View>
       )}
@@ -47,7 +47,7 @@ const RespuestaSimple = ({navigation, com, post}) => {
               size={20}
             />
           </TouchableOpacity>
-          <Text style={{color: '#9e9e9e', marginLeft: 5}}>0</Text>
+          <Text style={{color: '#9e9e9e', marginLeft: 5}}>{res_likes.length}</Text>
         </View>
       </View>
     </View>

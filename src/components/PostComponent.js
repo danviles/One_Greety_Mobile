@@ -9,9 +9,12 @@ import {
 } from 'react-native';
 import {Avatar} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {tiempoTranscurrido} from '../helpers/gestorFechas';
 
 const PostComponent = ({post}) => {
-  const {post_creador} = post;
+  const {post_creador, createdAt, post_contenido, post_titulo, post_media_img, post_likes, post_comentarios } = post;
+  const comentarios = post_comentarios.length + post_comentarios.reduce((acc, cur) => acc + cur.res_comentarios.length,  0);
+
   return (
     <View style={styles.postContenedor}>
       <View style={styles.postCabecera}>
@@ -21,26 +24,34 @@ const PostComponent = ({post}) => {
             <Text style={styles.postUsuarioTexto}>
               {post_creador.usu_nombre}
             </Text>
-            <Text style={styles.postTiempoTexto}>hace 1 hora</Text>
+            <Text style={styles.postTiempoTexto}>
+              {tiempoTranscurrido(createdAt)}
+            </Text>
           </View>
         </View>
       </View>
 
-      <Text style={styles.postTitulo}>{post.post_titulo}</Text>
+      <Text style={styles.postTitulo}>{post_titulo}</Text>
 
-      <View style={styles.postEtiqueta}>
-        <Text style={{color: 'white', fontWeight: 'bold'}}>Destacado</Text>
-        <MaterialCommunityIcons name="star-outline" color={'white'} size={20} />
-      </View>
+      {post.post_tags.includes('Destacado') && (
+        <View style={styles.postEtiqueta}>
+          <Text style={{color: 'white', fontWeight: 'bold'}}>Destacado</Text>
+          <MaterialCommunityIcons
+            name="star-outline"
+            color={'white'}
+            size={20}
+          />
+        </View>
+      )}
 
       <View style={styles.postContenido}>
-        <Text style={styles.postContenidoTexto}>{post.post_contenido}</Text>
+        <Text style={styles.postContenidoTexto}>{post_contenido}</Text>
       </View>
       {post.post_media_img && (
         <View style={styles.postImagenContenedor}>
           <Image
             style={styles.postImagen}
-            source={{uri: post.post_media_img}}
+            source={{uri: post_media_img}}
           />
         </View>
       )}
@@ -54,7 +65,7 @@ const PostComponent = ({post}) => {
               size={20}
             />
           </TouchableOpacity>
-          <Text style={{color: '#9e9e9e', marginLeft: 5}}>0</Text>
+          <Text style={{color: '#9e9e9e', marginLeft: 5}}>{post_likes.length}</Text>
         </View>
         <View style={styles.postComentarios}>
           <MaterialCommunityIcons
@@ -62,7 +73,7 @@ const PostComponent = ({post}) => {
             color={'#9e9e9e'}
             size={20}
           />
-          <Text style={{color: '#9e9e9e', marginLeft: 5}}>0</Text>
+          <Text style={{color: '#9e9e9e', marginLeft: 5}}>{comentarios}</Text>
         </View>
       </View>
     </View>

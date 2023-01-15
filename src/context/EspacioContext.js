@@ -1,6 +1,7 @@
 import React, {createContext, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import clienteAxios from '../config/clienteAxios';
+import useAuth from '../hooks/useAuth';
 
 const EspacioContext = createContext();
 
@@ -8,6 +9,7 @@ const EspacioProvider = ({children}) => {
   const [espacios, setEspacios] = useState([]);
   const [espacio, setEspacio] = useState(null);
   const [cargando, setCargando] = useState(false);
+  const {obtenerPerfil} = useAuth();
 
   const obtenerEspacios = async () => {
     setCargando(true);
@@ -52,6 +54,7 @@ const EspacioProvider = ({children}) => {
     try {
       await clienteAxios(`/espacios/seguidores/${id}`, config);
       obtenerEspacio(id);
+      obtenerPerfil();
     } catch (error) {
       setCargando(false);
       console.log(error.response.data.msg);
@@ -83,6 +86,31 @@ const EspacioProvider = ({children}) => {
     setCargando(false);
   };
 
+  const dejarEspacio = async (id) => {
+    setCargando(true);
+    const token = await AsyncStorage.getItem('Token');
+    if (!token) {
+      setCargando(false);
+      return;
+    }
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      await clienteAxios(`/espacios/eliminar-seguidor/${id}`, config);
+      obtenerEspacio(id);
+      obtenerPerfil();
+    } catch (error) {
+      setCargando(false);
+      console.log(error);
+    }
+    setCargando(false);
+  };
+
   return (
     <EspacioContext.Provider
       value={{
@@ -93,6 +121,8 @@ const EspacioProvider = ({children}) => {
         obtenerEspacio,
         agregarSeguidor,
         agregarPeticion,
+        dejarEspacio,
+        setEspacio,
       }}>
       {children}
     </EspacioContext.Provider>

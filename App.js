@@ -34,10 +34,10 @@ const App = () => {
     <NavigationContainer>
       <Provider theme={theme}>
         <AlertaProvider>
-          <EspacioProvider>
-            <ChatProvider>
-              <ForoProvider>
-                <AuthProvider>
+          <AuthProvider>
+            <EspacioProvider>
+              <ChatProvider>
+                <ForoProvider>
                   <Stack.Navigator initialRouteName="SplashScreen">
                     <Stack.Screen
                       name="SplashScreen"
@@ -152,10 +152,10 @@ const App = () => {
                       }}
                     />
                   </Stack.Navigator>
-                </AuthProvider>
-              </ForoProvider>
-            </ChatProvider>
-          </EspacioProvider>
+                </ForoProvider>
+              </ChatProvider>
+            </EspacioProvider>
+          </AuthProvider>
         </AlertaProvider>
       </Provider>
     </NavigationContainer>

@@ -1,19 +1,32 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, ImageBackground} from 'react-native';
-import {Paragraph, Button, ActivityIndicator} from 'react-native-paper';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  VirtualizedList,
+} from 'react-native';
+import {
+  Paragraph,
+  Button,
+  ActivityIndicator,
+  transparent,
+} from 'react-native-paper';
 import {useFocusEffect} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import LeftMenu from '../components/LeftMenu';
 import useEspacio from '../hooks/useEspacio';
 import useAuth from '../hooks/useAuth';
+import {ScrollView} from 'react-native-gesture-handler';
+import ActivityComponent from '../components/ActivityComponent';
 
 const Espacio = ({navigation}) => {
-  const {espacio, agregarSeguidor, agregarPeticion, cargando} = useEspacio();
+  const {espacio, cargando, agregarSeguidor, agregarPeticion} = useEspacio();
   const [esSeguidor, setEsSeguidor] = useState(false);
   const {auth} = useAuth();
 
   useEffect(() => {
-    if(espacio && auth) {
+    if (espacio && auth) {
       if (espacio.esp_seguidores.find(item => item === auth._id)) {
         setEsSeguidor(true);
       } else {
@@ -21,7 +34,6 @@ const Espacio = ({navigation}) => {
       }
     }
   }, [espacio, auth]);
-
 
   const handleSubmit = () => {
     if (espacio.esp_acceso) {
@@ -31,13 +43,11 @@ const Espacio = ({navigation}) => {
     }
   };
 
-
   if (cargando) {
     return (
       <ActivityIndicator animating={true} color={'#be2e4a'} style={{flex: 1}} />
     );
   }
-
 
   return (
     <>
@@ -63,17 +73,31 @@ const Espacio = ({navigation}) => {
                 </Text>
               </View>
             </View>
-            <Paragraph style={styles.textDescripcion}>
-              {espacio.esp_descripcion}
-            </Paragraph>
+            <ScrollView>
+              <Paragraph style={styles.textDescripcion}>
+                {espacio.esp_descripcion}
+              </Paragraph>
+            </ScrollView>
             {!esSeguidor && (
-              <Button mode="contained" style={styles.button} onPress={handleSubmit}>
+              <Button
+                mode="contained"
+                style={styles.button}
+                onPress={handleSubmit}>
                 {espacio.esp_acceso ? 'Unirte al club' : 'Pedir acceso'}
               </Button>
             )}
           </View>
         </ImageBackground>
       </View>
+      {cargando && (
+        <View style={styles.indicadorCargando}>
+          <ActivityIndicator
+            animating={true}
+            color={'#be2e4a'}
+            style={{flex: 1}}
+          />
+        </View>
+      )}
     </>
   );
 };
@@ -126,6 +150,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     fontWeight: 'bold',
     marginHorizontal: 50,
+  },
+  indicadorCargando: {
+    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 });
 

@@ -12,7 +12,7 @@ import {Searchbar} from 'react-native-paper';
 const Espacios = ({navigation}) => {
   const {auth, hacerLogout, cargando, obtenerPerfil} = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
-  const {espacios, obtenerEspacios} = useEspacio();
+  const {espacios, setEspacio, obtenerEspacios} = useEspacio();
   const [refreshing, setRefreshing] = useState(false);
 
   const onChangeSearch = query => setSearchQuery(query);
