@@ -8,13 +8,19 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import {Button, TextInput, ActivityIndicator, useTheme} from 'react-native-paper';
+import {
+  Button,
+  TextInput,
+  ActivityIndicator,
+  useTheme,
+} from 'react-native-paper';
 import DocumentPicker from 'react-native-document-picker';
 import useEspacio from '../hooks/useEspacio';
 import useForo from '../hooks/useForo';
 import LeftMenu from '../components/LeftMenu';
 import Cabecera from '../components/Cabecera';
-import { theme } from '../core/theme';
+import {theme} from '../core/theme';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const CrearPost = ({navigation}) => {
   const {espacio} = useEspacio();
@@ -26,6 +32,8 @@ const CrearPost = ({navigation}) => {
   const [post_media_img, setPostImg] = useState(undefined);
   const [post_media_id, setPostId] = useState('');
   const [imgpreview, setImgPreview] = useState('');
+  const [numCaracteres, setNumCaracteres] = useState(150);
+  const [numCaracteresContenido, setNumCaracteresContenido] = useState(2000);
 
   useEffect(() => {
     if (postBorrador.post_titulo) {
@@ -58,15 +66,28 @@ const CrearPost = ({navigation}) => {
       return;
     }
 
-    if ( post_media_img !== undefined ) {
+    if (post_titulo.length > 150) {
+      ToastAndroid.show(
+        'El titulo no puede tener mas de 300 caracteres',
+        ToastAndroid.SHORT,
+      );
+      return;
+    }
+
+    if (post_media_img !== undefined) {
       if (post_media_img.size > 10000000) {
-        ToastAndroid.show('El tamaño de la imagen no puede ser mayor a 5MB', ToastAndroid.SHORT );
+        ToastAndroid.show(
+          'El tamaño de la imagen no puede ser mayor a 5MB',
+          ToastAndroid.SHORT,
+        );
         return;
       }
     }
 
-
-    await crearPost({post_titulo, post_contenido, post_media_id, post_espacio: espacio._id}, post_media_img);
+    await crearPost(
+      {post_titulo, post_contenido, post_media_id, post_espacio: espacio._id},
+      post_media_img,
+    );
     setPostBorrador({});
     navigation.navigate('Foro');
   };
@@ -96,37 +117,75 @@ const CrearPost = ({navigation}) => {
 
   return (
     <>
+      <Cabecera
+        titulo={'Nuevo Post'}
+        icono={'file-image-plus-outline'}
+        color={colors.azul}
+        func={getImage}
+      />
 
-      <Cabecera titulo={'Nuevo Post'} icono={'file-image-plus-outline'} color={colors.azul} func={getImage}/>
+      <KeyboardAwareScrollView>
+        <ScrollView>
+          <View style={styles.contenedorFormulario}>
+            <Text style={styles.tituloFormulario}>Título</Text>
+            <TextInput
+              mode="outlined"
+              style={styles.input}
+              onChangeText={text => onChangeInputs('titulo', text)}
+              value={post_titulo}
+              maxLength={numCaracteres}
+            />
+            <View style={styles.numCaracteresContenedor}>
+              <Text
+                style={[
+                  styles.numCaracteres,
+                  {
+                    color:
+                      numCaracteres - post_titulo.length > 0
+                        ? 'grey'
+                        : colors.rojo,
+                  },
+                ]}>
+                {numCaracteres - post_titulo.length}
+              </Text>
+            </View>
+            <Text style={styles.tituloFormulario}>Contenido</Text>
+            <TextInput
+              multiline={true}
+              mode={'outlined'}
+              dense={true}
+              style={styles.inputContenido}
+              value={post_contenido}
+              onChangeText={text => onChangeInputs('contenido', text)}
+              maxLength={numCaracteresContenido}
+            />
+            <View style={styles.numCaracteresContenedor}>
+              <Text
+                style={[
+                  styles.numCaracteres,
+                  {
+                    color:
+                      numCaracteresContenido - post_contenido.length > 0
+                        ? 'grey'
+                        : colors.rojo,
+                  },
+                ]}>
+                {numCaracteresContenido - post_contenido.length}
+              </Text>
+            </View>
+            {imgpreview && (
+              <Image source={{uri: imgpreview}} style={styles.image} />
+            )}
 
-      <ScrollView>
-        <View style={styles.contenedorFormulario}>
-          <Text style={styles.tituloFormulario}>Título</Text>
-          <TextInput
-            mode="outlined"
-            style={styles.input}
-            onChangeText={text => onChangeInputs('titulo', text)}
-            value={post_titulo}
-          />
-          <Text style={styles.tituloFormulario}>Contenido</Text>
-          <TextInput
-            multiline={true}
-            mode={'outlined'}
-            dense={true}
-            style={styles.inputContenido}
-            value={post_contenido}
-            onChangeText={text => onChangeInputs('contenido', text)}
-          />
-
-          {imgpreview && (
-            <Image source={{uri: imgpreview}} style={styles.image} />
-          )}
-
-          <Button mode="contained" style={styles.boton} onPress={handleSubmit}>
-            Crear Post
-          </Button>
-        </View>
-      </ScrollView>
+            <Button
+              mode="contained"
+              style={styles.boton}
+              onPress={handleSubmit}>
+              Crear Post
+            </Button>
+          </View>
+        </ScrollView>
+      </KeyboardAwareScrollView>
     </>
   );
 };
@@ -159,6 +218,14 @@ const styles = StyleSheet.create({
   boton: {
     backgroundColor: theme.colors.verde,
     marginBottom: 20,
+  },
+  numCaracteresContenedor: {
+    alignItems: 'flex-end',
+    marginTop: -20,
+    marginBottom: 10,
+  },
+  numCaracteres: {
+    fontSize: 16,
   },
 });
 

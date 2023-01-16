@@ -1,23 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useState, useCallback, useEffect, useRef, useMemo} from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
   RefreshControl,
+  Text,
 } from 'react-native';
-import {Avatar, Button, ActivityIndicator, useTheme} from 'react-native-paper';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {Button, ActivityIndicator, useTheme} from 'react-native-paper';
 import Cabecera from '../components/Cabecera';
-import LeftMenu from '../components/LeftMenu';
 import PostPreview from '../components/PostPreview';
 import useEspacio from '../hooks/useEspacio';
+import useForo from '../hooks/useForo';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import {eliminarPost} from '../../../backend/controllers/postController';
 
 const Foro = ({navigation}) => {
   const {colors} = useTheme();
   const {espacio, cargando, obtenerEspacio} = useEspacio();
+  const {destacarPost, eliminarPost} = useForo();
+
+  const bottomSheetModalRef = useRef(null);
+  const snapPoints = useMemo(() => ['25%', '50%'], []);
 
   const [refreshing, setRefreshing] = useState(false);
   const [filterDestacados, setFilterDestacados] = useState(true);
@@ -25,11 +31,8 @@ const Foro = ({navigation}) => {
   const [filterActividad, setFilterActividad] = useState(false);
   const [filter, setFilter] = useState('Destacados');
   const [fposts, setFposts] = useState([]);
-
-  // useEffect(() => {
-  //   setFposts([...espacio.esp_foro]);
-  //   sortDestacados();
-  // }, [espacio]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [post, setPost] = useState({});
 
   useEffect(() => {
     if (filter === 'Destacados') {
@@ -41,8 +44,7 @@ const Foro = ({navigation}) => {
     if (filter === 'Actividad') {
       sortActividad();
     }
-
-  }, [filter]);
+  }, [filter, espacio]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -76,7 +78,9 @@ const Foro = ({navigation}) => {
     const fposts = [...espacio.esp_foro]
       .filter(post => post.post_tags.includes('Destacado'))
       .concat(
-        [...espacio.esp_foro].filter(post => !post.post_tags.includes('Destacado')),
+        [...espacio.esp_foro].filter(
+          post => !post.post_tags.includes('Destacado'),
+        ),
       );
     setFposts(fposts);
     handleFilter('Destacados');
@@ -91,7 +95,6 @@ const Foro = ({navigation}) => {
   };
 
   const sortActividad = () => {
-
     const fposts = [...espacio.esp_foro].sort(
       (a, b) =>
         b.post_comentarios.length +
@@ -109,64 +112,23 @@ const Foro = ({navigation}) => {
     handleFilter('Actividad');
   };
 
-  // const filter =
-  // searchQuery === ''
-  //   ? espacios
-  //   : espacios
-  //       .filter(espacio =>
-  //         espacio.esp_nombre
-  //           .toLowerCase()
-  //           .includes(searchQuery.toLowerCase()),
-  //       )
-  //       .concat(
-  //         espacios.filter(espacio =>
-  //           espacio.esp_administrador.usu_nombre
-  //             .toLowerCase()
-  //             .includes(searchQuery.toLowerCase()),
-  //         ),
-  //       )
-  //       .reduce((acc, item) => {
-  //         if (!acc.includes(item)) {
-  //           acc.push(item);
-  //         }
-  //         return acc;
-  //       }, []);
-
-  const filterPost = () => {
-    let fposts = [];
-    if (filterDestacados) {
-      fposts = espacio.esp_foro
-        .filter(post => post.post_tags.includes('Destacado'))
-        .concat(
-          espacio.esp_foro.filter(
-            post => !post.post_tags.includes('Destacado'),
-          ),
-        );
-      setFposts(fposts);
-    } else if (filterRecientes) {
-      fposts = espacio.esp_foro.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
-      );
-      setFposts(fposts);
-    } else if (filterActividad) {
-      fposts = espacio.esp_foro.sort(
-        (a, b) =>
-          b.post_comentarios.length +
-          b.post_comentarios.reduce(
-            (acc, cur) => acc + cur.res_comentarios.length,
-            0,
-          ) -
-          (a.post_comentarios.length +
-            a.post_comentarios.reduce(
-              (acc, cur) => acc + cur.res_comentarios.length,
-              0,
-            )),
-      );
-      setFposts(fposts);
-    }
+  const handlePressentModal = post => {
+    setPost(post);
+    bottomSheetModalRef.current?.present();
+    setTimeout(() => {
+      setIsOpen(true);
+    }, 100);
   };
 
-  // post_comentarios.length + post_comentarios.reduce((acc, cur) => acc + cur.res_comentarios.length,  0)
+  const editarPostOption = () => {};
+
+  const eliminarPostOption = () => {
+    eliminarPost(post._id);
+  };
+
+  const destacarPostOption = () => {
+    destacarPost(post._id);
+  };
 
   if (cargando) {
     return (
@@ -212,22 +174,74 @@ const Foro = ({navigation}) => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
         <View style={styles.posts}>
-          {/* {espacio.esp_foro.length > 0 &&
-            espacio.esp_foro.map(post => (
-              <TouchableOpacity onPress={() => navigation.navigate('Post', {post})} key={post._id}>
-                <PostPreview post={post} />
-              </TouchableOpacity>
-            ))} */}
           {fposts.length > 0 &&
             fposts.map(post => (
-              <TouchableOpacity
-                onPress={() => navigation.navigate('Post', {post})}
-                key={post._id}>
-                <PostPreview post={post} />
-              </TouchableOpacity>
+              <View key={post._id}>
+                <View style={styles.dotsMenuContainer}>
+                  <TouchableOpacity onPress={() => handlePressentModal(post)}>
+                    <MaterialCommunityIcons
+                      name="dots-vertical"
+                      color={'grey'}
+                      size={20}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Post', {post})}
+                  key={post._id}>
+                  <PostPreview post={post} />
+                </TouchableOpacity>
+              </View>
             ))}
         </View>
       </ScrollView>
+      {post._id ? (
+        <BottomSheetModalProvider>
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={0}
+            snapPoints={snapPoints}
+            backgroundStyle={{borderRadius: 50, borderWidth: 1}}
+            onDismiss={() => setIsOpen(false)}>
+            <View style={styles.modalContainer}>
+              <TouchableOpacity onPress={destacarPostOption}>
+                <View style={styles.modalOption}>
+                  <MaterialCommunityIcons
+                    name="star-outline"
+                    color={colors.amarillo}
+                    size={30}
+                  />
+                  <Text style={styles.modalOptionText}>
+                    {post.post_tags.includes('Destacado')
+                      ? 'No Destacar'
+                      : 'Destacar'}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <View style={styles.modalOption}>
+                  <MaterialCommunityIcons
+                    name="pencil-outline"
+                    color={colors.verde}
+                    size={30}
+                  />
+                  <Text style={styles.modalOptionText}>Editar</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={eliminarPostOption}>
+                <View style={styles.modalOption}>
+                  <MaterialCommunityIcons
+                    name="delete-outline"
+                    color={colors.rojo}
+                    size={30}
+                  />
+                  <Text style={styles.modalOptionText}>Eliminar</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </BottomSheetModal>
+        </BottomSheetModalProvider>
+      ) : null}
     </>
   );
 };
@@ -265,6 +279,24 @@ const styles = StyleSheet.create({
   },
   posts: {
     marginTop: 20,
+  },
+  dotsMenuContainer: {
+    position: 'absolute',
+    right: 5,
+    top: 20,
+    zIndex: 1,
+  },
+  modalContainer: {
+    padding: 20,
+  },
+  modalOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalOptionText: {
+    marginLeft: 20,
+    fontSize: 20,
   },
 });
 
