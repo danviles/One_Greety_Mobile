@@ -23,6 +23,7 @@ import {AlertaProvider} from './src/context/AlertaContext';
 import {EspacioProvider} from './src/context/EspacioContext';
 import {ForoProvider} from './src/context/ForoContext';
 import {ChatProvider} from './src/context/ChatContext';
+import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 
 import {Provider} from 'react-native-paper';
 import {theme} from './src/core/theme';
@@ -33,10 +34,11 @@ const App = () => {
   return (
     <NavigationContainer>
       <Provider theme={theme}>
+        <BottomSheetModalProvider>
           <AlertaProvider>
             <AuthProvider>
-              <EspacioProvider>
-                <ChatProvider>
+              <ChatProvider>
+                <EspacioProvider>
                   <ForoProvider>
                     <Stack.Navigator initialRouteName="SplashScreen">
                       <Stack.Screen
@@ -153,10 +155,11 @@ const App = () => {
                       />
                     </Stack.Navigator>
                   </ForoProvider>
-                </ChatProvider>
-              </EspacioProvider>
+                </EspacioProvider>
+              </ChatProvider>
             </AuthProvider>
           </AlertaProvider>
+        </BottomSheetModalProvider>
       </Provider>
     </NavigationContainer>
   );

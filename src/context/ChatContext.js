@@ -35,6 +35,7 @@ const ChatProvider = ({ children} ) => {
         chatMsgs,
         addChatMsg,
         actualizarChat,
+        setChatMsgs,
       }}>
       {children}
     </ChatContext.Provider>

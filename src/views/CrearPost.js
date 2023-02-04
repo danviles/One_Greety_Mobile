@@ -21,16 +21,26 @@ import LeftMenu from '../components/LeftMenu';
 import Cabecera from '../components/Cabecera';
 import {theme} from '../core/theme';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const CrearPost = ({navigation}) => {
   const {espacio} = useEspacio();
   const {colors} = useTheme();
-  const {postBorrador, setPostBorrador, crearPost, postCargando} = useForo();
+  const {
+    post,
+    editarPost,
+    postBorrador,
+    setPostBorrador,
+    crearPost,
+    postCargando,
+    setPost,
+  } = useForo();
 
   const [post_titulo, setTitulo] = useState('');
   const [post_contenido, setContenido] = useState('');
   const [post_media_img, setPostImg] = useState(undefined);
-  const [post_media_id, setPostId] = useState('');
+  const [post_media_id, setPostMediaId] = useState('');
+  const [post_id, setPostId] = useState('');
   const [imgpreview, setImgPreview] = useState('');
   const [numCaracteres, setNumCaracteres] = useState(150);
   const [numCaracteresContenido, setNumCaracteresContenido] = useState(2000);
@@ -42,6 +52,19 @@ const CrearPost = ({navigation}) => {
       setImgPreview(postBorrador.imgpreview);
     }
   }, []);
+
+  useEffect(() => {
+    if (post._id) {
+      setPostId(post._id);
+      setTitulo(post.post_titulo);
+      setContenido(post.post_contenido);
+    }
+    if (post.post_media_id) {
+      setPostImg(post.post_media_img);
+      setImgPreview(post.post_media_img);
+      setPostMediaId(post.post_media_id);
+    }
+  }, [post]);
 
   const onChangeInputs = (input, texto) => {
     switch (input) {
@@ -84,10 +107,19 @@ const CrearPost = ({navigation}) => {
       }
     }
 
-    await crearPost(
-      {post_titulo, post_contenido, post_media_id, post_espacio: espacio._id},
-      post_media_img,
-    );
+    if (post._id) {
+      await editarPost(
+        {post_titulo, post_contenido, post_media_id, post_espacio: espacio._id},
+        post_media_img,
+        post_id,
+      );
+    } else {
+      await crearPost(
+        {post_titulo, post_contenido, post_media_id, post_espacio: espacio._id},
+        post_media_img,
+      );
+    }
+
     setPostBorrador({});
     navigation.navigate('Foro');
   };
@@ -107,6 +139,11 @@ const CrearPost = ({navigation}) => {
         throw err;
       }
     }
+  };
+
+  const eliminarImagen = () => {
+    setImgPreview('');
+    setPostImg('eliminar');
   };
 
   if (postCargando) {
@@ -174,14 +211,24 @@ const CrearPost = ({navigation}) => {
               </Text>
             </View>
             {imgpreview && (
-              <Image source={{uri: imgpreview}} style={styles.image} />
+              <View style={styles.contenedorImagen}>
+                <Image source={{uri: imgpreview}} style={styles.image} />
+                <TouchableOpacity onPress={eliminarImagen}>
+                  <MaterialCommunityIcons
+                    name="close-circle-outline"
+                    color={'#ff0000'}
+                    size={30}
+                    style={styles.quitarImagenIcono}
+                  />
+                </TouchableOpacity>
+              </View>
             )}
 
             <Button
               mode="contained"
               style={styles.boton}
               onPress={handleSubmit}>
-              Crear Post
+              {post._id ? 'Editar Post' : 'Crear Post'}
             </Button>
           </View>
         </ScrollView>
@@ -226,6 +273,16 @@ const styles = StyleSheet.create({
   },
   numCaracteres: {
     fontSize: 16,
+  },
+  contenedorImagen: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 20,
+  },
+  quitarImagenIcono: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

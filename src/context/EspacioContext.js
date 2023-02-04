@@ -2,6 +2,7 @@ import React, {createContext, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import clienteAxios from '../config/clienteAxios';
 import useAuth from '../hooks/useAuth';
+import useChat from '../hooks/useChat';
 
 const EspacioContext = createContext();
 
@@ -9,7 +10,9 @@ const EspacioProvider = ({children}) => {
   const [espacios, setEspacios] = useState([]);
   const [espacio, setEspacio] = useState(null);
   const [cargando, setCargando] = useState(false);
-  const {obtenerPerfil} = useAuth();
+  const {auth, obtenerPerfil, setEsAdmin, setEsColaborador, setEsCreador} = useAuth();
+
+  const {setChatMsgs} = useChat();
 
   const obtenerEspacios = async () => {
     setCargando(true);
@@ -23,7 +26,7 @@ const EspacioProvider = ({children}) => {
     setCargando(false);
   };
 
-  const obtenerEspacio = async (id) => {
+  const obtenerEspacio = async id => {
     setCargando(true);
     try {
       const {data} = await clienteAxios.get(`/espacios/unico/${id}`);
@@ -32,10 +35,11 @@ const EspacioProvider = ({children}) => {
       setCargando(false);
       console.log(error);
     }
+    setChatMsgs([]);
     setCargando(false);
   };
 
-  const agregarSeguidor = async (id) => {
+  const agregarSeguidor = async id => {
     setCargando(true);
     const token = await AsyncStorage.getItem('Token');
 
@@ -62,7 +66,7 @@ const EspacioProvider = ({children}) => {
     setCargando(false);
   };
 
-  const agregarPeticion = async (id) => {
+  const agregarPeticion = async id => {
     setCargando(true);
     const token = await AsyncStorage.getItem('Token');
     if (!token) {
@@ -78,7 +82,7 @@ const EspacioProvider = ({children}) => {
     };
     try {
       await clienteAxios(`/espacios/peticiones/${id}`, config);
-      obtenerEspacio(id)
+      obtenerEspacio(id);
     } catch (error) {
       setCargando(false);
       console.log(error);
@@ -86,7 +90,7 @@ const EspacioProvider = ({children}) => {
     setCargando(false);
   };
 
-  const dejarEspacio = async (id) => {
+  const dejarEspacio = async id => {
     setCargando(true);
     const token = await AsyncStorage.getItem('Token');
     if (!token) {
@@ -110,6 +114,7 @@ const EspacioProvider = ({children}) => {
     }
     setCargando(false);
   };
+
 
   return (
     <EspacioContext.Provider

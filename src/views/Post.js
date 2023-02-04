@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useState, useRef, useMemo, useEffect} from 'react';
 import {
   View,
   Text,
@@ -11,16 +11,35 @@ import {
   Modal,
   Alert,
 } from 'react-native';
-import {Avatar, Button, ActivityIndicator} from 'react-native-paper';
+import {Avatar, Button, ActivityIndicator, Menu} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import LeftMenu from '../components/LeftMenu';
 import PostComponent from '../components/PostComponent';
 import RespuestaComponent from '../components/RespuestaComponent';
 import Cabecera from '../components/Cabecera';
+import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import MenuModal from '../components/MenuModal';
+import useEspacio from '../hooks/useEspacio';
+import useForo from '../hooks/useForo';
 
 const Post = ({navigation, route}) => {
-  const {post} = route.params;
-  const {post_creador, post_comentarios} = post;
+  const { post, postCargando, obtenerPost } = useForo();
+  const {espacio} = useEspacio();
+
+  const openModal = useRef(null);
+
+  useEffect(() => {
+  }, [post]);
+
+  const handlePressentModal = () => {
+    openModal.current?.mostrarModal();
+  };
+
+  if (postCargando) {
+    return (
+      <ActivityIndicator animating={true} color={'#be2e4a'} style={{flex: 1}} />
+    );
+  }
 
   return (
     <>
@@ -28,10 +47,24 @@ const Post = ({navigation, route}) => {
 
       <ScrollView>
         <View style={styles.contenedor}>
-          <PostComponent post={post} />
-          {post_comentarios.length > 0 &&
-            post_comentarios.map(com => (
-              <RespuestaComponent key={com._id} navigation={navigation} com={com} post={post} />
+          <View style={styles.dotsMenuContainer}>
+            <TouchableOpacity onPress={handlePressentModal}>
+              <MaterialCommunityIcons
+                name="dots-vertical"
+                color={'grey'}
+                size={20}
+              />
+            </TouchableOpacity>
+          </View>
+          <PostComponent />
+          {post.post_comentarios.length > 0 &&
+            post.post_comentarios.map(com => (
+              <RespuestaComponent
+                key={com._id}
+                navigation={navigation}
+                com={com}
+                post={post}
+              />
             ))}
         </View>
       </ScrollView>
@@ -39,10 +72,21 @@ const Post = ({navigation, route}) => {
       <View style={styles.postStickyFooter}>
         <View style={styles.postComentarioContenedor}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('NuevoComentario', {titulo: post.post_titulo, id: post._id})}>
+            onPress={() =>
+              navigation.navigate('NuevoComentario', {
+                titulo: post.post_titulo,
+                id: post._id,
+              })
+            }>
             <Text style={styles.postComentarioTexto}>Añadir un comentario</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('NuevoComentario', {titulo: post.post_titulo, id: post._id})}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('NuevoComentario', {
+                titulo: post.post_titulo,
+                id: post._id,
+              })
+            }>
             <MaterialCommunityIcons
               name="image-outline"
               size={20}
@@ -51,6 +95,7 @@ const Post = ({navigation, route}) => {
           </TouchableOpacity>
         </View>
       </View>
+      <MenuModal openModal={openModal} />
     </>
   );
 };
@@ -176,6 +221,12 @@ const styles = StyleSheet.create({
   postComentarioContenido: {
     marginTop: 10,
     padding: 10,
+  },
+  dotsMenuContainer: {
+    position: 'absolute',
+    right: 5,
+    top: 20,
+    zIndex: 1,
   },
 });
 

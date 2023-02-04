@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,12 +10,29 @@ import {
 import {Avatar} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {tiempoTranscurrido} from '../helpers/gestorFechas';
+import useForo from '../hooks/useForo';
 
-const RespuestaSimple = ({navigation, com, post}) => {
+const RespuestaSimple = ({navigation, com}) => {
+  const {post} = useForo();
   const {res_creador, res_contenido, res_likes, res_media_img, createdAt} = com;
+
+  const handlePressentModal = () => {
+  };
+
+  useEffect (() => {
+  }, [post])
 
   return (
     <View style={styles.respuestaSimpleContenedor}>
+      <View style={styles.dotsMenuContainer}>
+            <TouchableOpacity onPress={handlePressentModal}>
+              <MaterialCommunityIcons
+                name="dots-vertical"
+                color={'grey'}
+                size={20}
+              />
+            </TouchableOpacity>
+          </View>
       <View style={styles.postCabecera}>
         <View style={styles.postPerfil}>
           <Avatar.Image size={50} source={{uri: res_creador.usu_perfil_img}} />
@@ -111,6 +128,12 @@ const styles = StyleSheet.create({
     height: imageHeight,
     width: imageWidth,
     resizeMode: 'stretch',
+  },
+  dotsMenuContainer: {
+    position: 'absolute',
+    right: 5,
+    top: 20,
+    zIndex: 1,
   },
 });
 

@@ -1,4 +1,4 @@
-import React, {useRef, useState, useMemo} from 'react';
+import React, {useRef, useState, useMemo, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {Avatar} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -14,13 +14,6 @@ const PostPreview = ({post}) => {
   const comentarios =
     post_comentarios.length +
     post_comentarios.reduce((acc, cur) => acc + cur.res_comentarios.length, 0);
-
-  const handlePressentModal = () => {
-    bottomSheetModalRef.current?.present();
-    setTimeout(() => {
-      setIsOpen(true);
-    }, 100);
-  };
 
   return (
     <>

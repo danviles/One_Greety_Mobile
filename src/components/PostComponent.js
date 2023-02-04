@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,10 +10,17 @@ import {
 import {Avatar} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {tiempoTranscurrido} from '../helpers/gestorFechas';
+import useEspacio from '../hooks/useEspacio';
+import useForo from '../hooks/useForo';
 
-const PostComponent = ({post}) => {
+const PostComponent = () => {
+  const {post} = useForo();
+  const {espacio} = useEspacio();
   const {post_creador, createdAt, post_contenido, post_titulo, post_media_img, post_likes, post_comentarios } = post;
   const comentarios = post_comentarios.length + post_comentarios.reduce((acc, cur) => acc + cur.res_comentarios.length,  0);
+
+  useEffect(() => {
+  }, [post]);
 
   return (
     <View style={styles.postContenedor}>

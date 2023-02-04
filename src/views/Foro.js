@@ -11,19 +11,21 @@ import {
 import {Button, ActivityIndicator, useTheme} from 'react-native-paper';
 import Cabecera from '../components/Cabecera';
 import PostPreview from '../components/PostPreview';
+import MenuModal from '../components/MenuModal';
 import useEspacio from '../hooks/useEspacio';
 import useForo from '../hooks/useForo';
+import useAuth from '../hooks/useAuth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
-import {eliminarPost} from '../../../backend/controllers/postController';
 
 const Foro = ({navigation}) => {
   const {colors} = useTheme();
   const {espacio, cargando, obtenerEspacio} = useEspacio();
-  const {destacarPost, eliminarPost} = useForo();
+  const { post, setPost, setRolUsuario, obtenerPost} = useForo();
+  const {auth} = useAuth();
 
-  const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['25%', '50%'], []);
+  const openModal = useRef(null);
+  const snapPoints = useMemo(() => ['15%', '30%'], []);
 
   const [refreshing, setRefreshing] = useState(false);
   const [filterDestacados, setFilterDestacados] = useState(true);
@@ -32,7 +34,10 @@ const Foro = ({navigation}) => {
   const [filter, setFilter] = useState('Destacados');
   const [fposts, setFposts] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [post, setPost] = useState({});
+
+  useEffect(() => {
+    setRolUsuario();
+  }, []); 
 
   useEffect(() => {
     if (filter === 'Destacados') {
@@ -45,6 +50,10 @@ const Foro = ({navigation}) => {
       sortActividad();
     }
   }, [filter, espacio]);
+
+  useEffect(() => {
+    setRolUsuario();
+  }, [post]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -112,22 +121,14 @@ const Foro = ({navigation}) => {
     handleFilter('Actividad');
   };
 
-  const handlePressentModal = post => {
+  const handlePressentModal = (post) => {
     setPost(post);
-    bottomSheetModalRef.current?.present();
-    setTimeout(() => {
-      setIsOpen(true);
-    }, 100);
+    openModal.current?.mostrarModal();
   };
 
-  const editarPostOption = () => {};
-
-  const eliminarPostOption = () => {
-    eliminarPost(post._id);
-  };
-
-  const destacarPostOption = () => {
-    destacarPost(post._id);
+  const handlePost = (post) => {
+    obtenerPost(post._id)
+    navigation.navigate('Post', {post});
   };
 
   if (cargando) {
@@ -187,7 +188,7 @@ const Foro = ({navigation}) => {
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('Post', {post})}
+                  onPress={() => handlePost(post)}
                   key={post._id}>
                   <PostPreview post={post} />
                 </TouchableOpacity>
@@ -196,51 +197,7 @@ const Foro = ({navigation}) => {
         </View>
       </ScrollView>
       {post._id ? (
-        <BottomSheetModalProvider>
-          <BottomSheetModal
-            ref={bottomSheetModalRef}
-            index={0}
-            snapPoints={snapPoints}
-            backgroundStyle={{borderRadius: 50, borderWidth: 1}}
-            onDismiss={() => setIsOpen(false)}>
-            <View style={styles.modalContainer}>
-              <TouchableOpacity onPress={destacarPostOption}>
-                <View style={styles.modalOption}>
-                  <MaterialCommunityIcons
-                    name="star-outline"
-                    color={colors.amarillo}
-                    size={30}
-                  />
-                  <Text style={styles.modalOptionText}>
-                    {post.post_tags.includes('Destacado')
-                      ? 'No Destacar'
-                      : 'Destacar'}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <View style={styles.modalOption}>
-                  <MaterialCommunityIcons
-                    name="pencil-outline"
-                    color={colors.verde}
-                    size={30}
-                  />
-                  <Text style={styles.modalOptionText}>Editar</Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={eliminarPostOption}>
-                <View style={styles.modalOption}>
-                  <MaterialCommunityIcons
-                    name="delete-outline"
-                    color={colors.rojo}
-                    size={30}
-                  />
-                  <Text style={styles.modalOptionText}>Eliminar</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          </BottomSheetModal>
-        </BottomSheetModalProvider>
+        <MenuModal openModal={openModal}/>
       ) : null}
     </>
   );

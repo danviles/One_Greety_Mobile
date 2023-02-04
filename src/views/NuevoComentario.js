@@ -20,7 +20,7 @@ import DocumentPicker from 'react-native-document-picker';
 const NuevoComentario = ({navigation, route}) => {
   const {colors} = useTheme();
   const {titulo, id} = route.params;
-  const {crearComentario, postCargando} = useForo();
+  const {post, crearComentario, postCargando} = useForo();
 
   const [res_contenido, setResContenido] = useState('');
   const [res_media_img, setResMediaImg] = useState(undefined);
@@ -60,7 +60,7 @@ const NuevoComentario = ({navigation, route}) => {
     }
 
 
-    await crearComentario({res_contenido, res_media_id}, id, res_media_img);
+    await crearComentario({res_contenido, res_media_id}, id, post._id, res_media_img);
 
     navigation.goBack();
   };
