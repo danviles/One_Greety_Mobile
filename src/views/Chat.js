@@ -56,7 +56,7 @@ const Chat = ({navigation}) => {
 
   const handleInputFocus = () => {
     scrollsref.current.scrollToEnd({animated: true});
-  }; 
+  };
 
   const handleSend = () => {
     if (!userColor[auth.usu_nombre]) {
