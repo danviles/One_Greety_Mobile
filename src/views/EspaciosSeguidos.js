@@ -1,18 +1,29 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import Cabecera from '../components/Cabecera';
 import useAuth from '../hooks/useAuth';
 import PreviewEspacioPerfil from '../components/PreviewEspacioPerfil';
+import { ActivityIndicator } from 'react-native-paper';
 
 const EspaciosSeguidos = () => {
-  const {auth} = useAuth();
+  const {auth, cargando, obtenerPerfilUsuario, perfilUsuario} = useAuth();
+
+  useEffect(() => {
+    obtenerPerfilUsuario(auth._id);
+  }, []);
+
+  if (cargando) {
+    return (
+      <ActivityIndicator animating={true} color={'#be2e4a'} style={{flex: 1}} />
+    );
+  }
   return (
     <>
       <Cabecera lm={false} titulo={'Clubes seguidos'}/>
       <View style={styles.contenedorEspacios}>
         <ScrollView>
-          {auth.usu_espacios ? (
-            auth.usu_espacios.map(espacio => (
+          {perfilUsuario.usu_espacios ? (
+            perfilUsuario.usu_espacios.map(espacio => (
                 <PreviewEspacioPerfil key={espacio._id} espacio={espacio} />
             ))
           ) : (

@@ -17,6 +17,7 @@ import useForo from '../hooks/useForo';
 import useAuth from '../hooks/useAuth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import {useFocusEffect} from '@react-navigation/native';
 
 const Foro = ({navigation}) => {
   const {colors} = useTheme();
@@ -38,6 +39,12 @@ const Foro = ({navigation}) => {
   useEffect(() => {
     setRolUsuario();
   }, []); 
+
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     setPost({});
+  //   }, []),
+  // );
 
   useEffect(() => {
     if (filter === 'Destacados') {
@@ -91,7 +98,7 @@ const Foro = ({navigation}) => {
           post => !post.post_tags.includes('Destacado'),
         ),
       );
-    setFposts(fposts);
+    setFposts(fposts); 
     handleFilter('Destacados');
   };
 
@@ -137,13 +144,18 @@ const Foro = ({navigation}) => {
     );
   }
 
+  const handleCrearPost = () => {
+    setPost({});
+    navigation.navigate('CrearPost');
+  };
+
   return (
     <>
       <Cabecera
         titulo={'Foro'}
         icono={'pencil-plus-outline'}
         color={colors.verde}
-        func={() => navigation.navigate('CrearPost')}
+        func={handleCrearPost}
       />
 
       <View style={styles.filtroForo}>

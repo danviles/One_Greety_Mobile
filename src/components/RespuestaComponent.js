@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -12,93 +12,100 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import RespuestaSimple from './RespuestaSimple';
 import {tiempoTranscurrido} from '../helpers/gestorFechas';
 import useForo from '../hooks/useForo';
-
+import MenuModal from '../components/MenuModal';
 
 const RespuestaComponent = ({navigation, com}) => {
+  const {post} = useForo();
+  const {
+    res_creador,
+    res_contenido,
+    res_comentarios,
+    res_likes,
+    res_media_img,
+    createdAt,
+  } = com;
 
-  const { post } = useForo();
-  const {res_creador, res_contenido, res_comentarios, res_likes, res_media_img, createdAt} = com;
+  const openModal = useRef(null);
 
   const handlePressentModal = () => {
+    openModal.current?.mostrarModal();
   };
 
-  useEffect(() => {
-  }, [post]);
+  useEffect(() => {}, [post]);
 
   return (
-    <View style={styles.postContenedor}>
-      <View style={styles.dotsMenuContainer}>
-            <TouchableOpacity onPress={handlePressentModal}>
+    <>
+      <View style={styles.postContenedor}>
+        <View style={styles.postCabecera}>
+          <View style={styles.postPerfil}>
+            <Avatar.Image
+              size={50}
+              source={{uri: res_creador.usu_perfil_img}}
+            />
+            <View style={styles.postPerfilTexto}>
+              <Text style={styles.postUsuarioTexto}>
+                {res_creador.usu_nombre}
+              </Text>
+              <Text style={styles.postTiempoTexto}>
+                {tiempoTranscurrido(createdAt)}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.postComentarioContenido}>
+          <Text style={styles.postComentarioTexto}>{res_contenido}</Text>
+        </View>
+
+        {com.res_media_img && (
+          <View style={styles.postImagenContenedor}>
+            <Image style={styles.postImagen} source={{uri: res_media_img}} />
+          </View>
+        )}
+
+        <View style={styles.postOptionsContenedor}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('NuevoComentario', {
+                titulo: res_contenido,
+                id: com._id,
+              })
+            }>
+            <View style={styles.postComentarios}>
               <MaterialCommunityIcons
-                name="dots-vertical"
-                color={'grey'}
+                name="reply-outline"
+                color={'#26c963'}
+                size={20}
+              />
+              <Text style={styles.responderTexto}>Responder</Text>
+            </View>
+          </TouchableOpacity>
+          <View style={styles.postLikes}>
+            <TouchableOpacity>
+              <MaterialCommunityIcons
+                name="thumb-up-outline"
+                color={'#9e9e9e'}
                 size={20}
               />
             </TouchableOpacity>
-          </View>
-      <View style={styles.postCabecera}>
-        <View style={styles.postPerfil}>
-          <Avatar.Image size={50} source={{uri: res_creador.usu_perfil_img}} />
-          <View style={styles.postPerfilTexto}>
-            <Text style={styles.postUsuarioTexto}>
-              {res_creador.usu_nombre}
+            <Text style={{color: '#9e9e9e', marginLeft: 5}}>
+              {res_likes.length}
             </Text>
-            <Text style={styles.postTiempoTexto}>{tiempoTranscurrido(createdAt)}</Text>
           </View>
         </View>
-      </View>
-
-      <View style={styles.postComentarioContenido}>
-        <Text style={styles.postComentarioTexto}>{res_contenido}</Text>
-      </View>
-
-      {com.res_media_img && (
-        <View style={styles.postImagenContenedor}>
-          <Image
-            style={styles.postImagen}
-            source={{uri: res_media_img}}
-          />
-        </View>
-      )}
-
-      <View style={styles.postOptionsContenedor}>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('NuevoComentario', {
-              titulo: res_contenido,
-              id: com._id,
-            })
-          }>
-          <View style={styles.postComentarios}>
-            <MaterialCommunityIcons
-              name="reply-outline"
-              color={'#26c963'}
-              size={20}
+        {res_comentarios.length > 0 &&
+          res_comentarios.map(comres => (
+            <RespuestaSimple
+              key={comres._id}
+              navigation={navigation}
+              com={comres}
+              post={post}
             />
-            <Text style={styles.responderTexto}>Responder</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.postLikes}>
-          <TouchableOpacity>
-            <MaterialCommunityIcons
-              name="thumb-up-outline"
-              color={'#9e9e9e'}
-              size={20}
-            />
-          </TouchableOpacity>
-          <Text style={{color: '#9e9e9e', marginLeft: 5}}>{res_likes.length}</Text>
-        </View>
+          ))}
       </View>
-      {res_comentarios.length > 0 &&
-        res_comentarios.map(comres => (
-          <RespuestaSimple
-            key={comres._id}
-            navigation={navigation}
-            com={comres}
-            post={post}
-          />
-        ))}
-    </View>
+      
+      <MenuModal openModal={openModal} />
+    </>
   );
 };
 
@@ -174,7 +181,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   postImagen: {
-    height: '50%',
+    height: imageHeight,
     width: imageWidth,
     resizeMode: 'stretch',
   },

@@ -2,8 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import useEspacio from '../hooks/useEspacio';
-import { useNavigation } from '@react-navigation/native';
-
+import {useNavigation} from '@react-navigation/native';
 
 const PreviewEspacioPerfil = ({espacio}) => {
   const {obtenerEspacio} = useEspacio();
@@ -11,29 +10,33 @@ const PreviewEspacioPerfil = ({espacio}) => {
 
   const handleEspacio = () => {
     obtenerEspacio(espacio._id);
-    navigation.navigate('Espacio')
+    navigation.navigate('Espacio');
   };
   return (
-    <TouchableOpacity onPress={handleEspacio}>
-      <View style={styles.contenedorEspCorto}>
-        <Text style={styles.textoNombreEspacio}>{espacio.esp_nombre}</Text>
-        <View style={styles.contenedorInfoEspacio}>
-          <Text style={styles.textoAdminEspacio}>
-            {espacio.esp_administrador.usu_nombre}
-          </Text>
-          <View style={styles.contenedorSeguidores}>
-            <Text style={styles.numSeguidores}>
-              {espacio.esp_seguidores.length}
-            </Text>
-            <MaterialCommunityIcons
-              name="heart-outline"
-              color={'red'}
-              size={20}
-            />
+    <>
+      {espacio && (
+        <TouchableOpacity onPress={handleEspacio}>
+          <View style={styles.contenedorEspCorto}>
+            <Text style={styles.textoNombreEspacio}>{espacio.esp_nombre}</Text>
+            <View style={styles.contenedorInfoEspacio}>
+              <Text style={styles.textoAdminEspacio}>
+                {espacio ? espacio.esp_administrador.usu_nombre : ''}
+              </Text>
+              <View style={styles.contenedorSeguidores}>
+                <Text style={styles.numSeguidores}>
+                  {espacio.esp_seguidores.length && espacio.esp_seguidores.length}
+                </Text>
+                <MaterialCommunityIcons
+                  name="heart-outline"
+                  color={'red'}
+                  size={20}
+                />
+              </View>
+            </View>
           </View>
-        </View>
-      </View>
-    </TouchableOpacity>
+        </TouchableOpacity>
+      )}
+    </>
   );
 };
 

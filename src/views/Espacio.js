@@ -36,6 +36,10 @@ const Espacio = ({navigation}) => {
   }, [espacio, auth]);
 
   const handleSubmit = () => {
+    if (!auth._id) {
+      navigation.navigate('Login');
+      return;
+    }
     if (espacio.esp_acceso) {
       agregarSeguidor(espacio._id);
     } else {
@@ -81,9 +85,20 @@ const Espacio = ({navigation}) => {
             {!esSeguidor && (
               <Button
                 mode="contained"
-                style={styles.button}
-                onPress={handleSubmit}>
-                {espacio.esp_acceso ? 'Unirte al club' : 'Pedir acceso'}
+                style={
+                  espacio.esp_baneados.includes(auth._id) ? styles.buttonBanned :
+                  espacio.esp_peticiones.includes(auth._id) ? styles.buttonSucces : styles.button
+                }
+                onPress={handleSubmit}
+                disabled={espacio.esp_peticiones.includes(auth._id) || espacio.esp_baneados.includes(auth._id)}
+                >
+                {
+                  espacio.esp_baneados.includes(auth._id) ? 'Baneado' :
+                  espacio.esp_acceso ? 'Unirte al club' : 
+                  espacio.esp_peticiones.includes(auth._id) ? 'Petición enviada' : 'Enviar petición'
+                }
+                
+                
               </Button>
             )}
           </View>
@@ -161,6 +176,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  buttonSucces: {
+    marginTop: 10,
+    backgroundColor: '#26c963',
+    fontWeight: 'bold',
+    marginHorizontal: 50,
+  },
+  buttonBanned: {
+    marginTop: 10,
+    backgroundColor: '#c9c9c9',
+    fontWeight: 'bold',
+    marginHorizontal: 50,
   },
 });
 

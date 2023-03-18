@@ -52,8 +52,10 @@ const CrearCuenta = ({navigation}) => {
 
   return (
     <>
-      <View style={styles.container}>
+      <View style={styles.centrarLogo}>
         <Logo />
+      </View>
+      <View style={styles.container}>
         <View style={styles.formInput}>
           <Text>Nombre</Text>
           <TextInput
@@ -184,6 +186,13 @@ const styles = StyleSheet.create({
   },
   textOlvidePassword: {
     color: '#075985',
+  },
+  centrarLogo: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 30,
+    marginBottom: 70,
   },
 });
 

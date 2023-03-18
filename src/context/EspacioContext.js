@@ -85,7 +85,7 @@ const EspacioProvider = ({children}) => {
       obtenerEspacio(id);
     } catch (error) {
       setCargando(false);
-      console.log(error);
+      console.log(error.response.data.msg);
     }
     setCargando(false);
   };

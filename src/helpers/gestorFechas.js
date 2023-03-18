@@ -12,6 +12,9 @@ export const tiempoTranscurrido = fecha => {
   const fechaNueva = new Date(fecha);
   const fechaActual = new Date();
   const diferencia = fechaActual - fechaNueva;
+  if (diferencia < 60000) {
+    return "Recién publicado";
+  }
   const minutos = Math.floor(diferencia / 1000 / 60);
   const horas = Math.floor(minutos / 60);
   const dias = Math.floor(horas / 24);

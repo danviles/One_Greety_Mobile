@@ -15,27 +15,29 @@ import {useNavigation} from '@react-navigation/native';
 const MenuModalCrud = ({}) => {
   const navigation = useNavigation();
   const {colors} = useTheme();
-  const {post, destacarPost, eliminarPost} = useForo();
+  const {post, destacarPost, eliminarPost, esCreador} = useForo();
 
   return (
     <View style={styles.modalContainer}>
       <TouchableOpacity onPress={() => destacarPost(post._id)}>
-        <View style={styles.modalOption}>
-          <MaterialCommunityIcons
-            name="star-outline"
-            color={colors.amarillo}
-            size={30}
-          />
-          {post.post_tags ? (
-            <Text style={styles.modalOptionText}>
-              {post.post_tags.includes('Destacado')
-                ? 'No Destacar'
-                : 'Destacar'}
-            </Text>
-          ) : (
-            <Text style={styles.modalOptionText}>Destacar</Text>
-          )}
-        </View>
+        {!esCreador && (
+          <View style={styles.modalOption}>
+            <MaterialCommunityIcons
+              name="star-outline"
+              color={colors.amarillo}
+              size={30}
+            />
+            {post.post_tags ? (
+              <Text style={styles.modalOptionText}>
+                {post.post_tags.includes('Destacado')
+                  ? 'No Destacar'
+                  : 'Destacar'}
+              </Text>
+            ) : (
+              <Text style={styles.modalOptionText}>Destacar</Text>
+            )}
+          </View>
+        )}
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('CrearPost')}>
         <View style={styles.modalOption}>

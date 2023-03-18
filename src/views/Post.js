@@ -23,13 +23,12 @@ import useEspacio from '../hooks/useEspacio';
 import useForo from '../hooks/useForo';
 
 const Post = ({navigation, route}) => {
-  const { post, postCargando, obtenerPost } = useForo();
+  const {post, postCargando, obtenerPost} = useForo();
   const {espacio} = useEspacio();
 
   const openModal = useRef(null);
 
-  useEffect(() => {
-  }, [post]);
+  useEffect(() => {}, [post]);
 
   const handlePressentModal = () => {
     openModal.current?.mostrarModal();
@@ -57,14 +56,25 @@ const Post = ({navigation, route}) => {
             </TouchableOpacity>
           </View>
           <PostComponent />
-          {post.post_comentarios.length > 0 &&
+          {
+            post.post_comentarios.length > 0 &&
             post.post_comentarios.map(com => (
-              <RespuestaComponent
-                key={com._id}
-                navigation={navigation}
-                com={com}
-                post={post}
-              />
+              <View key={com._id}>
+                <View style={styles.dotsMenuContainer}>
+                  <TouchableOpacity onPress={handlePressentModal}>
+                    <MaterialCommunityIcons
+                      name="dots-vertical"
+                      color={'grey'}
+                      size={20}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <RespuestaComponent
+                  navigation={navigation}
+                  com={com}
+                  post={post}
+                />
+              </View> 
             ))}
         </View>
       </ScrollView>

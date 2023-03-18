@@ -41,6 +41,12 @@ const Chat = ({navigation}) => {
 
   useEffect(() => {
     const eventListener = data => {
+      if (!userColor[data.usuario]) {
+        const keys = Object.keys(chatColors);
+        const randomIndex = Math.floor(Math.random() * keys.length);
+        const randomColor = chatColors[keys[randomIndex]];
+        setUserColor({...userColor, [data.usuario]: randomColor});
+      }
       actualizarChat(data);
     };
     socket.on('msg agregado', eventListener);
@@ -60,8 +66,8 @@ const Chat = ({navigation}) => {
 
   const handleSend = () => {
     if (!userColor[auth.usu_nombre]) {
-      const keys = Object.keys(chatColors); // ['rojo', 'verde', 'azul']
-      const randomIndex = Math.floor(Math.random() * keys.length); // 0, 1 o 2
+      const keys = Object.keys(chatColors);
+      const randomIndex = Math.floor(Math.random() * keys.length);
       const randomColor = chatColors[keys[randomIndex]];
       setUserColor({...userColor, [auth.usu_nombre]: randomColor});
     }
@@ -124,7 +130,7 @@ const Chat = ({navigation}) => {
               multiline={true}
               mode="outlined"
               onFocus={handleInputFocus}
-              onChangeText={text => setMsg(text)}
+              onChangeText={text => setMsg(text.replace(/[\r\n]+/g, ""))}
               value={msg}
             />
           </View>

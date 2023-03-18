@@ -4,14 +4,16 @@ import {ToastAndroid} from 'react-native';
 import clienteAxios from '../config/clienteAxios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useAlerta from '../hooks/useAlerta';
+import {useNavigation} from '@react-navigation/native';
 
 const AuthContext = createContext();
 
-const AuthProvider = ({children, navigation}) => {
+const AuthProvider = ({children}) => {
   const [auth, setAuth] = useState({});
   const [cargando, setCargando] = useState(false);
   const [perfilUsuario, setPerfilUsuario] = useState({});
   const {mostrarAlerta} = useAlerta();
+  const navigation = useNavigation();
 
   const hacerLogin = async user => {
     const {usu_email, usu_password} = user;
@@ -157,6 +159,7 @@ const AuthProvider = ({children, navigation}) => {
       const {data} = await clienteAxios.post('/usuarios', user);
       mostrarAlerta();
       setCargando(false);
+      navigation.navigate('Dashboard');
     } catch (error) {
       setCargando(false);
       ToastAndroid.show(error.response.data.msg, ToastAndroid.SHORT);
