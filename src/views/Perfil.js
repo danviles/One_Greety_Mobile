@@ -61,7 +61,7 @@ const Perfil = ({navigation}) => {
             </View>
           </TouchableOpacity>
           <View style={styles.contenedorPicker}>
-            <Text style={styles.textoPicker}>Region de busqueda</Text>
+            <Text style={styles.textoPicker}>Región de búsqueda</Text>
             <Picker
               style={{color: 'gray'}}
               selectedValue={usu_region}
@@ -74,7 +74,7 @@ const Perfil = ({navigation}) => {
             </Picker>
           </View>
           <Button mode="contained" style={styles.button} onPress={handleLogout}>
-            Cerrar Sesion
+            Cerrar Sesión
           </Button>
         </View>
       ) : (

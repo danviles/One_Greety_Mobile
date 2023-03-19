@@ -79,7 +79,7 @@ const Login = ({navigation}) => {
         {cargando && <ActivityIndicator animating={true} color={'#be2e4a'} />}
       </View>
       <View style={styles.olvidePassword}>
-        <Text>¿ No puedes iniciar sesión ? </Text>
+        <Text>¿No puedes iniciar sesión? </Text>
         <TouchableOpacity
           onPress={() => navigation.navigate('RecuperarPassword')}>
           <Text style={styles.textOlvidePassword}>Presiona aquí</Text>
@@ -100,7 +100,7 @@ const Login = ({navigation}) => {
         mode="contained"
         style={styles.button}
         onPress={() => navigation.navigate('CrearCuenta')}>
-        Registrate
+        Regístrate
       </Button>
     </View>
   );
